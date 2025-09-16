@@ -1,0 +1,138 @@
+<!-- Ductwork Calculator: Width, Height, Volumetric Flowrate -->
+<!-- Add Google Fonts link for Lato Light -->
+<link href="https://fonts.googleapis.com/css?family=Lato:300&display=swap" rel="stylesheet">
+<style>
+  body, div, h3, h4, label, input, button, table, th, td, p {
+    font-family: 'Lato', Arial, sans-serif;
+    font-weight: 300;
+  }
+</style>
+<div style="max-width:600px;padding:20px;border:1px solid #ccc;border-radius:8px;">
+  <h3>Ductwork Calculator</h3>
+  <label>Width (mm): <input type="number" id="width" min="0"></label><br>
+  <label>Height (mm): <input type="number" id="height" min="0"></label><br>
+  <label>Volumetric Flowrate (m³/s): <input type="number" id="flowrate" min="0" step="0.001"></label><br><br>
+  <button onclick="calculate()">Calculate</button>
+  <p id="result"></p>
+  <h4>Last 10 Calculations</h4>
+  <table border="1" cellpadding="4" id="resultsTable">
+    <thead>
+      <tr>
+        <th>Width (mm)</th>
+        <th>Height (mm)</th>
+        <th>Flowrate (m³/s)</th>
+        <th>Velocity (m/s)</th>
+        <th>Pressure Drop (Pa/m)</th>
+      </tr>
+    </thead>
+    <tbody id="resultsBody"></tbody>
+  </table>
+</div>
+<script>
+let history = [];
+
+function calculate() {
+  const width = parseFloat(document.getElementById('width').value) || 0;
+  const height = parseFloat(document.getElementById('height').value) || 0;
+  const flowrate = parseFloat(document.getElementById('flowrate').value) || 0;
+
+  if (width <= 0 || height <= 0 || flowrate <= 0) {
+    document.getElementById('result').innerText = "Please enter valid values for all inputs.";
+    return;
+  }
+
+  // Area in m²
+  const area = (width * height) / 1e6;
+  // Velocity in m/s
+  const velocity = flowrate / area;
+
+  // Simplified pressure drop formula (Pa/m) for rectangular duct
+  // Assume air density = 1.2 kg/m³, friction factor = 0.02
+  const density = 1.2;
+  const frictionFactor = 0.02;
+  const hydraulicDiameter = 2 * (width * height) / (width + height); // mm
+  const hydraulicDiameter_m = hydraulicDiameter / 1000; // m
+  const pressureDrop = frictionFactor * (density / hydraulicDiameter_m) * Math.pow(velocity, 2);
+
+  // Round results
+  const velocityRounded = Math.round(velocity * 100) / 100;
+  const pressureDropRounded = Math.round(pressureDrop * 100) / 100;
+
+  document.getElementById('result').innerText =
+    "Velocity: " + velocityRounded + " m/s | Pressure Drop: " + pressureDropRounded + " Pa/m";
+
+  // Add to history
+  history.unshift({
+    width,
+    height,
+    flowrate,
+    velocity: velocityRounded,
+    pressureDrop: pressureDropRounded
+  });
+  if (history.length > 10) history.pop();
+  updateResultsTable();
+}
+
+function updateResultsTable() {
+  const tbody = document.getElementById('resultsBody');
+  tbody.innerHTML = '';
+  history.forEach(item => {
+    const row = `<tr>
+      <td>${item.width}</td>
+      <td>${item.height}</td>
+      <td>${item.flowrate}</td>
+      <td>${item.velocity}</td>
+      <td>${item.pressureDrop}</td>
+    </tr>`;
+    tbody.innerHTML += row;
+  });
+}
+</script>
+
+  // Area in m²
+  const area = (width * height) / 1e6;
+  // Velocity in m/s
+  const velocity = flowrate / area;
+
+  // Simplified pressure drop formula (Pa/m) for rectangular duct
+  // Assume air density = 1.2 kg/m³, friction factor = 0.02
+  const density = 1.2;
+  const frictionFactor = 0.02;
+  const hydraulicDiameter = 2 * (width * height) / (width + height); // mm
+  const hydraulicDiameter_m = hydraulicDiameter / 1000; // m
+  const pressureDrop = frictionFactor * (density / hydraulicDiameter_m) * Math.pow(velocity, 2);
+
+  // Round results
+  const velocityRounded = Math.round(velocity * 100) / 100;
+  const pressureDropRounded = Math.round(pressureDrop * 100) / 100;
+
+  document.getElementById('result').innerText =
+    "Velocity: " + velocityRounded + " m/s | Pressure Drop: " + pressureDropRounded + " Pa/m";
+
+  // Add to history
+  history.unshift({
+    width,
+    height,
+    flowrate,
+    velocity: velocityRounded,
+    pressureDrop: pressureDropRounded
+  });
+  if (history.length > 10) history.pop();
+  updateResultsTable();
+}
+
+function updateResultsTable() {
+  const tbody = document.getElementById('resultsBody');
+  tbody.innerHTML = '';
+  history.forEach(item => {
+    const row = `<tr>
+      <td>${item.width}</td>
+      <td>${item.height}</td>
+      <td>${item.flowrate}</td>
+      <td>${item.velocity}</td>
+      <td>${item.pressureDrop}</td>
+    </tr>`;
+    tbody.innerHTML += row;
+  });
+}
+</script>
