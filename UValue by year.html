@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic U-Value Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-6 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white rounded-xl shadow-2xl p-8 max-w-2xl w-full border border-gray-200">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4 text-center">U-Value Regulations by Year and Country</h1>
+        <p class="text-gray-600 text-center mb-6">Select a year and a country to see the indicative U-values for new dwellings.</p>
+        
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-6 mb-8">
+            <div class="w-full sm:w-1/2">
+                <label for="country-select" class="block text-gray-700 font-semibold mb-2">Select Country:</label>
+                <select id="country-select" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-200 ease-in-out">
+                    <option value="england-wales">England & Wales</option>
+                    <option value="scotland">Scotland</option>
+                </select>
+            </div>
+            
+            <div class="w-full sm:w-1/2">
+                <label for="year-select" class="block text-gray-700 font-semibold mb-2">Select Year:</label>
+                <select id="year-select" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-200 ease-in-out">
+                    <option value="1976">1976</option>
+                    <option value="1990">1990</option>
+                    <option value="2002">2002</option>
+                    <option value="2006">2006</option>
+                    <option value="2010">2010</option>
+                    <option value="2022">2022</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="bg-gray-50 rounded-lg p-4 shadow-inner border border-gray-200 overflow-x-auto">
+            <table class="min-w-full table-auto">
+                <thead>
+                    <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                        <th class="py-3 px-6 text-left font-bold">Building Component</th>
+                        <th class="py-3 px-6 text-left font-bold">U-Value (W/m²K)</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table-body" class="text-gray-800 text-sm font-light">
+                    <!-- Table data will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const uValueData = {
+            'england-wales': {
+                '1976': {
+                    'External Walls': '1.7',
+                    'Roofs': '2.3',
+                    'Floors': '1.0 - 1.5',
+                    'Windows': '5.6 (single glazing)'
+                },
+                '1990': {
+                    'External Walls': '0.45',
+                    'Roofs': '0.25',
+                    'Floors': '0.45',
+                    'Windows': '3.3 (double glazing)'
+                },
+                '2002': {
+                    'External Walls': '0.35',
+                    'Roofs': '0.25',
+                    'Floors': '0.25',
+                    'Windows': '2.2'
+                },
+                '2006': {
+                    'External Walls': '0.30',
+                    'Roofs': '0.20',
+                    'Floors': '0.22',
+                    'Windows': '2.0'
+                },
+                '2010': {
+                    'External Walls': '0.28',
+                    'Roofs': '0.18',
+                    'Floors': '0.18',
+                    'Windows': '1.6'
+                },
+                '2022': {
+                    'External Walls': '0.18',
+                    'Roofs': '0.11',
+                    'Floors': '0.13',
+                    'Windows': '1.2'
+                }
+            },
+            'scotland': {
+                '1976': {
+                    'External Walls': '1.7',
+                    'Roofs': '2.3',
+                    'Floors': '1.0 - 1.5',
+                    'Windows': '5.6 (single glazing)'
+                },
+                '1990': {
+                    'External Walls': '0.45',
+                    'Roofs': '0.25',
+                    'Floors': '0.45',
+                    'Windows': '3.3'
+                },
+                '2002': {
+                    'External Walls': '0.30',
+                    'Roofs': '0.25',
+                    'Floors': '0.22',
+                    'Windows': '2.0'
+                },
+                '2006': {
+                    'External Walls': '0.27',
+                    'Roofs': '0.15',
+                    'Floors': '0.18',
+                    'Windows': '1.8'
+                },
+                '2010': {
+                    'External Walls': '0.24',
+                    'Roofs': '0.15',
+                    'Floors': '0.15',
+                    'Windows': '1.4'
+                },
+                '2022': {
+                    'External Walls': '0.17',
+                    'Roofs': '0.11',
+                    'Floors': '0.15',
+                    'Windows': '1.2'
+                }
+            }
+        };
+
+        const yearSelect = document.getElementById('year-select');
+        const countrySelect = document.getElementById('country-select');
+        const dataTableBody = document.getElementById('data-table-body');
+
+        function updateTable() {
+            const selectedCountry = countrySelect.value;
+            const selectedYear = yearSelect.value;
+            const dataForSelectedYear = uValueData[selectedCountry][selectedYear];
+            
+            let tableHTML = '';
+            for (const component in dataForSelectedYear) {
+                const uValue = dataForSelectedYear[component];
+                tableHTML += `
+                    <tr class="border-b border-gray-200 hover:bg-gray-100 transition duration-150 ease-in-out">
+                        <td class="py-3 px-6 text-left whitespace-nowrap">${component}</td>
+                        <td class="py-3 px-6 text-left">${uValue}</td>
+                    </tr>
+                `;
+            }
+            dataTableBody.innerHTML = tableHTML;
+        }
+
+        // Initial table render
+        window.onload = () => {
+          updateTable();
+        };
+        
+        yearSelect.addEventListener('change', updateTable);
+        countrySelect.addEventListener('change', updateTable);
+    </script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thermal Modelling Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 min-h-screen flex items-center justify-center">
+
+    <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-2xl">
+        <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Steady-State Heat Loss Calculator</h1>
+
+        <!-- Input Section -->
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">Environmental Inputs</h2>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1">
+                    <label for="externalTemp" class="block text-sm font-medium text-gray-700">External Temperature (°C)</label>
+                    <input type="number" id="externalTemp" value="-5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 transition-colors duration-200">
+                </div>
+                <div class="flex-1">
+                    <label for="internalTemp" class="block text-sm font-medium text-gray-700">Internal Temperature (°C)</label>
+                    <input type="number" id="internalTemp" value="20" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 transition-colors duration-200">
+                </div>
+            </div>
+        </div>
+
+        <!-- Component Input Section -->
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">Building Components</h2>
+            <div id="component-inputs" class="space-y-4">
+                <div class="component-row grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
+                    <input type="text" placeholder="Component Name" class="col-span-1 rounded-md border-gray-300 shadow-sm p-2 transition-colors duration-200">
+                    <input type="number" placeholder="Area (m²)" class="col-span-1 rounded-md border-gray-300 shadow-sm p-2 transition-colors duration-200">
+                    <input type="number" placeholder="U-Value (W/m²K)" class="col-span-1 rounded-md border-gray-300 shadow-sm p-2 transition-colors duration-200">
+                    <button class="remove-btn bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md transition-all duration-200">Remove</button>
+                </div>
+            </div>
+            <button id="add-component-btn" class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200">Add Component</button>
+        </div>
+
+        <button id="calculate-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-md text-lg transition-colors duration-200 shadow-md">Calculate Heat Loss</button>
+
+        <!-- Results Section -->
+        <div id="results-container" class="mt-8 hidden">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">Results</h2>
+            <div id="results-table-container"></div>
+            <div id="total-loss" class="mt-4 text-right text-2xl font-bold text-gray-800"></div>
+        </div>
+        
+        <div id="message-box" class="mt-4 p-4 text-center rounded-md text-white font-semibold hidden"></div>
+
+    </div>
+
+    <script>
+        const addComponentBtn = document.getElementById('add-component-btn');
+        const componentInputs = document.getElementById('component-inputs');
+        const calculateBtn = document.getElementById('calculate-btn');
+        const resultsContainer = document.getElementById('results-container');
+        const resultsTableContainer = document.getElementById('results-table-container');
+        const totalLossDiv = document.getElementById('total-loss');
+        const messageBox = document.getElementById('message-box');
+        
+        // Add a default component row on load
+        addNewComponentRow();
+
+        addComponentBtn.addEventListener('click', addNewComponentRow);
+        componentInputs.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-btn')) {
+                // Ensure at least one row remains
+                if (componentInputs.children.length > 1) {
+                    e.target.closest('.component-row').remove();
+                } else {
+                    showMessage("Cannot remove the last component. At least one component is required.", 'error');
+                }
+            }
+        });
+        
+        calculateBtn.addEventListener('click', calculateHeatLoss);
+
+        function addNewComponentRow() {
+            const newRow = document.createElement('div');
+            newRow.classList.add('component-row', 'grid', 'grid-cols-1', 'sm:grid-cols-4', 'gap-4', 'items-center');
+            newRow.innerHTML = `
+                <input type="text" placeholder="Component Name" class="col-span-1 rounded-md border-gray-300 shadow-sm p-2 transition-colors duration-200">
+                <input type="number" placeholder="Area (m²)" class="col-span-1 rounded-md border-gray-300 shadow-sm p-2 transition-colors duration-200">
+                <input type="number" placeholder="U-Value (W/m²K)" class="col-span-1 rounded-md border-gray-300 shadow-sm p-2 transition-colors duration-200">
+                <button class="remove-btn bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md transition-all duration-200">Remove</button>
+            `;
+            componentInputs.appendChild(newRow);
+        }
+
+        function calculateHeatLoss() {
+            const externalTemp = parseFloat(document.getElementById('externalTemp').value);
+            const internalTemp = parseFloat(document.getElementById('internalTemp').value);
+
+            if (isNaN(externalTemp) || isNaN(internalTemp)) {
+                showMessage("Please enter valid numbers for temperatures.", 'error');
+                return;
+            }
+
+            const components = [];
+            const componentRows = document.querySelectorAll('.component-row');
+            
+            for (const row of componentRows) {
+                const inputs = row.querySelectorAll('input');
+                const name = inputs[0].value.trim();
+                const area = parseFloat(inputs[1].value);
+                const uValue = parseFloat(inputs[2].value);
+                
+                if (!name || isNaN(area) || isNaN(uValue) || area <= 0 || uValue < 0) {
+                    showMessage("Please fill in all component details with valid numbers.", 'error');
+                    return;
+                }
+
+                components.push({ name, area, uValue });
+            }
+
+            const deltaT = internalTemp - externalTemp;
+            let totalHeatLoss = 0;
+            const results = [];
+
+            components.forEach(comp => {
+                const qComponent = comp.uValue * comp.area * deltaT;
+                totalHeatLoss += qComponent;
+                results.push({
+                    name: comp.name,
+                    area: comp.area.toFixed(2),
+                    uValue: comp.uValue.toFixed(2),
+                    heatLoss: qComponent.toFixed(2)
+                });
+            });
+
+            displayResults(results, totalHeatLoss, externalTemp, internalTemp);
+        }
+
+        function displayResults(results, totalHeatLoss, externalTemp, internalTemp) {
+            let tableHTML = `
+                <p class="text-sm font-medium text-gray-700">Internal Temp: ${internalTemp.toFixed(1)} °C, External Temp: ${externalTemp.toFixed(1)} °C</p>
+                <div class="overflow-x-auto mt-4 rounded-lg shadow-sm">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Component</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Area (m²)</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">U-Value (W/m²K)</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Heat Loss (W)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+            `;
+
+            results.forEach(res => {
+                tableHTML += `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${res.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${res.area}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${res.uValue}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${res.heatLoss}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            resultsTableContainer.innerHTML = tableHTML;
+            totalLossDiv.textContent = `Total Heat Loss: ${totalHeatLoss.toFixed(2)} Watts`;
+            resultsContainer.classList.remove('hidden');
+            showMessage("Calculation successful!", 'success');
+        }
+
+        function showMessage(message, type) {
+            messageBox.textContent = message;
+            messageBox.classList.remove('hidden', 'bg-red-500', 'bg-green-500');
+            if (type === 'error') {
+                messageBox.classList.add('bg-red-500');
+            } else if (type === 'success') {
+                messageBox.classList.add('bg-green-500');
+            }
+        }
+    </script>
+</body>
+</html>
