@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booster Set Resistance Calculator</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; line-height: 1.6; color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        .result-box { background: #e7f3fe; padding: 15px; border-left: 5px solid #2196F3; font-weight: bold; }
+        input { width: 80px; padding: 5px; }
+    </style>
+</head>
+<body>
+
+    <h2>Coldwater Booster Set Resistance Calculator</h2>
+    <p>This tool calculates total dynamic head (TDH) using the Hazen-Williams method. 
+       Standard C-factor for Copper/Plastics is assumed at <strong>140</strong>.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+                <th>Unit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Design Flow Rate ($Q$)</td>
+                <td><input type="number" id="flow" value="2.5" step="0.1"></td>
+                <td>L/s</td>
+            </tr>
+            <tr>
+                <td>Internal Pipe Diameter ($d$)</td>
+                <td><input type="number" id="diameter" value="50"></td>
+                <td>mm</td>
+            </tr>
+            <tr>
+                <td>Straight Pipe Length</td>
+                <td><input type="number" id="length" value="30"></td>
+                <td>m</td>
+            </tr>
+            <tr>
+                <td>Number of 90° Bends</td>
+                <td><input type="number" id="bends" value="5"></td>
+                <td>Qty</td>
+            </tr>
+            <tr>
+                <td>Number of Outlets/Valves</td>
+                <td><input type="number" id="outlets" value="2"></td>
+                <td>Qty</td>
+            </tr>
+            <tr>
+                <td>Static Height (Vertical Lift)</td>
+                <td><input type="number" id="static" value="15"></td>
+                <td>m</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button onclick="calculateResistance()">Calculate Total Head</button>
+
+    <div class="result-box" id="results" style="margin-top:20px; display:none;">
+        <p>Friction Loss: <span id="friction">0</span> mH₂O</p>
+        <p>Total Dynamic Head (TDH): <span id="tdh">0</span> mH₂O</p>
+        <p>Pressure Required: <span id="bar">0</span> bar</p>
+    </div>
+
+    <script>
+        function calculateResistance() {
+            const Q = parseFloat(document.getElementById('flow').value) / 1000; // m³/s
+            const d = parseFloat(document.getElementById('diameter').value) / 1000; // m
+            const L_pipe = parseFloat(document.getElementById('length').value);
+            const bends = parseInt(document.getElementById('bends').value);
+            const outlets = parseInt(document.getElementById('outlets').value);
+            const staticHead = parseFloat(document.getElementById('static').value);
+            
+            // Equivalent lengths (approximate for 50mm pipe)
+            // Bend ~ 1.5m, Outlet/Valve ~ 3.0m
+            const L_equiv = L_pipe + (bends * 1.5) + (outlets * 3.0);
+            
+            // Hazen-Williams (Metric)
+            // h = 10.67 * L * (Q^1.852) / (C^1.852 * d^4.87)
+            const C = 140;
+            const frictionLoss = (10.67 * L_equiv * Math.pow(Q, 1.852)) / (Math.pow(C, 1.852) * Math.pow(d, 4.87));
+            
+            const totalHead = frictionLoss + staticHead;
+            const bar = totalHead / 10.197; // 1 bar ≈ 10.197 mH2O
+
+            document.getElementById('friction').innerText = frictionLoss.toFixed(2);
+            document.getElementById('tdh').innerText = totalHead.toFixed(2);
+            document.getElementById('bar').innerText = bar.toFixed(2);
+            document.getElementById('results').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

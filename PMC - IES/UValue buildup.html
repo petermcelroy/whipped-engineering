@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom U-Value Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+        .container-card {
+            max-width: 800px;
+        }
+        input:disabled {
+            background-color: #e5e7eb;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="p-6 md:p-10 flex items-center justify-center min-h-screen">
+    <div class="container-card bg-white p-8 rounded-2xl shadow-xl w-full">
+        <header class="text-center mb-6">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-2">Custom U-Value Calculator</h1>
+            <p class="text-lg text-gray-600">Build your structure and calculate thermal performance.</p>
+        </header>
+
+        <!-- Environmental Conditions -->
+        <div class="mb-6 bg-green-50 p-4 rounded-xl border border-green-200">
+            <h2 class="text-xl font-bold mb-2">Environmental Conditions</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="internal-temp" class="block text-sm font-medium text-gray-700">Internal Temp ($T_{int}$)</label>
+                    <input type="number" id="internal-temp" value="20" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 p-2.5">
+                </div>
+                <div>
+                    <label for="external-temp" class="block text-sm font-medium text-gray-700">External Temp ($T_{ext}$)</label>
+                    <input type="number" id="external-temp" value="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 p-2.5">
+                </div>
+                <div>
+                    <label for="area" class="block text-sm font-medium text-gray-700">Area (A) in $m^2$</label>
+                    <input type="number" id="area" value="1" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 p-2.5">
+                </div>
+            </div>
+        </div>
+
+        <!-- Fixed Resistances -->
+        <div class="mb-6 bg-blue-50 p-4 rounded-xl border border-blue-200">
+            <h2 class="text-xl font-bold mb-2">Fixed Resistances</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                These are standard surface resistances for a vertical wall.
+                The values are in $m^2K/W$.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="rsi" class="block text-sm font-medium text-gray-700">Internal Surface Resistance ($R_{si}$)</label>
+                    <input type="number" id="rsi" value="0.13" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" readonly>
+                </div>
+                <div>
+                    <label for="rse" class="block text-sm font-medium text-gray-700">External Surface Resistance ($R_{se}$)</label>
+                    <input type="number" id="rse" value="0.04" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" readonly>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Material Layers -->
+        <div class="mb-6">
+            <h2 class="text-xl font-bold mb-4">Material Layers</h2>
+            <div id="material-layers" class="space-y-4">
+                <!-- Layers will be dynamically added here -->
+            </div>
+            <button id="add-layer-btn" class="w-full mt-4 bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-xl hover:bg-gray-300 transition-colors duration-200 flex items-center justify-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                <span>Add Layer</span>
+            </button>
+        </div>
+
+        <!-- Calculation & Results -->
+        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+            <button id="calculate-btn" class="flex-1 bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-colors duration-200 shadow-md">
+                Calculate
+            </button>
+        </div>
+        
+        <div id="results-container" class="mt-6 p-6 rounded-xl bg-gray-100 hidden">
+            <h2 class="text-xl font-bold mb-4 text-center">Calculation Results</h2>
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-semibold">Total Resistance ($R_{total}$):</span>
+                <span id="total-r-value" class="text-lg font-bold"></span>
+            </div>
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-semibold text-2xl">U-Value:</span>
+                <span id="u-value" class="text-3xl font-extrabold text-blue-600"></span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="font-semibold text-2xl">Heat Loss (kW):</span>
+                <span id="heat-loss" class="text-3xl font-extrabold text-red-600"></span>
+            </div>
+            <p class="mt-4 text-sm text-center text-gray-500">
+                U-value is calculated as $U = \frac{1}{R_{total}}$. Heat loss is calculated as $Q = U \times A \times (T_{int} - T_{ext})$.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const materials = {
+                'Select Material': { type: 'placeholder', lambda: null },
+                'Brick (Common)': { type: 'lambda', lambda: 0.6 },
+                'Concrete (Dense)': { type: 'lambda', lambda: 1.13 },
+                'Concrete Block (Lightweight)': { type: 'lambda', lambda: 0.51 },
+                'Plasterboard': { type: 'lambda', lambda: 0.16 },
+                'Mineral Wool Insulation': { type: 'lambda', lambda: 0.04 },
+                'PIR Insulation': { type: 'lambda', lambda: 0.022 },
+                'EPS Insulation (Expanded Polystyrene)': { type: 'lambda', lambda: 0.038 },
+                'Timber (Pine)': { type: 'lambda', lambda: 0.12 },
+                'Gypsum Plaster': { type: 'lambda', lambda: 0.35 },
+                'External Render': { type: 'lambda', lambda: 1.4 },
+                'Air Gap': { type: 'airgap' }
+            };
+
+            const addLayerBtn = document.getElementById('add-layer-btn');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const materialLayersContainer = document.getElementById('material-layers');
+            const resultsContainer = document.getElementById('results-container');
+            const uValueDisplay = document.getElementById('u-value');
+            const totalRValueDisplay = document.getElementById('total-r-value');
+            const heatLossDisplay = document.getElementById('heat-loss');
+            const rsiInput = document.getElementById('rsi');
+            const rseInput = document.getElementById('rse');
+            const internalTempInput = document.getElementById('internal-temp');
+            const externalTempInput = document.getElementById('external-temp');
+            const areaInput = document.getElementById('area');
+
+            // Function to get the thermal resistance of an air gap based on thickness
+            function getAirGapResistance(thickness) {
+                if (thickness <= 5) return 0.0;
+                if (thickness > 5 && thickness <= 20) return 0.15;
+                if (thickness > 20) return 0.18;
+                return 0.0;
+            }
+
+            // Function to create a new material layer input group
+            function createLayerInput() {
+                const layerDiv = document.createElement('div');
+                layerDiv.classList.add('flex', 'flex-col', 'sm:flex-row', 'sm:space-x-4', 'space-y-4', 'sm:space-y-0', 'items-center', 'p-4', 'bg-gray-50', 'rounded-xl', 'border', 'border-gray-200');
+
+                // Material Select
+                const materialSelect = document.createElement('select');
+                materialSelect.classList.add('flex-1', 'w-full', 'rounded-md', 'border-gray-300', 'shadow-sm', 'focus:ring-blue-500', 'focus:border-blue-500', 'p-2.5');
+                for (const material in materials) {
+                    const option = document.createElement('option');
+                    option.value = material;
+                    option.textContent = material;
+                    materialSelect.appendChild(option);
+                }
+
+                // Thickness Input
+                const thicknessInput = document.createElement('input');
+                thicknessInput.type = 'number';
+                thicknessInput.placeholder = 'Thickness (mm)';
+                thicknessInput.min = '0';
+                thicknessInput.classList.add('flex-1', 'w-full', 'rounded-md', 'border-gray-300', 'shadow-sm', 'focus:ring-blue-500', 'focus:border-blue-500', 'p-2.5');
+
+                // Lambda Input
+                const lambdaInput = document.createElement('input');
+                lambdaInput.type = 'number';
+                lambdaInput.placeholder = 'Lambda (W/mK)';
+                lambdaInput.min = '0.001';
+                lambdaInput.step = '0.001';
+                lambdaInput.classList.add('flex-1', 'w-full', 'rounded-md', 'border-gray-300', 'shadow-sm', 'focus:ring-blue-500', 'focus:border-blue-500', 'p-2.5');
+
+                // Air Gap R-value display
+                const airGapRValueDisplay = document.createElement('span');
+                airGapRValueDisplay.classList.add('text-sm', 'text-gray-500', 'mt-1');
+                airGapRValueDisplay.style.display = 'none';
+
+                // Add an event listener to the material select to handle different material types
+                materialSelect.addEventListener('change', () => {
+                    const selectedMaterial = materialSelect.value;
+                    const materialData = materials[selectedMaterial];
+                    
+                    if (materialData.type === 'airgap') {
+                        thicknessInput.disabled = false;
+                        lambdaInput.disabled = true;
+                        lambdaInput.value = '';
+                        airGapRValueDisplay.style.display = 'block';
+                    } else if (materialData.type === 'lambda') {
+                        thicknessInput.disabled = false;
+                        lambdaInput.disabled = false;
+                        lambdaInput.value = materialData.lambda;
+                        airGapRValueDisplay.style.display = 'none';
+                    } else { // placeholder
+                         thicknessInput.disabled = false;
+                         lambdaInput.disabled = false;
+                         lambdaInput.value = '';
+                         thicknessInput.value = '';
+                         airGapRValueDisplay.style.display = 'none';
+                    }
+                    resultsContainer.classList.add('hidden');
+                });
+                
+                // Set initial values
+                if (materials[materialSelect.value].type === 'lambda') {
+                     lambdaInput.value = materials[materialSelect.value].lambda;
+                }
+
+                // Update air gap R-value display on thickness change
+                thicknessInput.addEventListener('input', () => {
+                    if (materialSelect.value === 'Air Gap') {
+                        const thickness = parseFloat(thicknessInput.value);
+                        if (!isNaN(thickness) && thickness >= 0) {
+                            const rValue = getAirGapResistance(thickness);
+                            airGapRValueDisplay.textContent = `R: ${rValue.toFixed(2)} m²K/W`;
+                        } else {
+                            airGapRValueDisplay.textContent = 'R: N/A';
+                        }
+                    }
+                    resultsContainer.classList.add('hidden');
+                });
+
+                // Remove Button
+                const removeBtn = document.createElement('button');
+                removeBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 11-2 0v6a1 1 0 112 0V8z" clip-rule="evenodd" />
+                                    </svg>`;
+                removeBtn.classList.add('text-red-500', 'hover:text-red-700', 'transition-colors', 'duration-200', 'p-2', 'rounded-full');
+                removeBtn.title = 'Remove layer';
+                removeBtn.addEventListener('click', () => {
+                    layerDiv.remove();
+                    resultsContainer.classList.add('hidden');
+                });
+
+                layerDiv.appendChild(materialSelect);
+                layerDiv.appendChild(thicknessInput);
+                layerDiv.appendChild(lambdaInput);
+                layerDiv.appendChild(airGapRValueDisplay);
+                layerDiv.appendChild(removeBtn);
+                materialLayersContainer.appendChild(layerDiv);
+                
+                // Add event listeners to trigger recalculation on change
+                materialSelect.addEventListener('change', () => resultsContainer.classList.add('hidden'));
+                thicknessInput.addEventListener('input', () => resultsContainer.classList.add('hidden'));
+                lambdaInput.addEventListener('input', () => resultsContainer.classList.add('hidden'));
+            }
+
+            // Initial layer
+            createLayerInput();
+
+            addLayerBtn.addEventListener('click', () => {
+                createLayerInput();
+            });
+            
+            internalTempInput.addEventListener('input', () => resultsContainer.classList.add('hidden'));
+            externalTempInput.addEventListener('input', () => resultsContainer.classList.add('hidden'));
+            areaInput.addEventListener('input', () => resultsContainer.classList.add('hidden'));
+
+            calculateBtn.addEventListener('click', () => {
+                let totalResistance = parseFloat(rsiInput.value) + parseFloat(rseInput.value);
+                let isValid = true;
+                
+                const layers = materialLayersContainer.children;
+                if (layers.length === 0) {
+                    alert('Please add at least one material layer.');
+                    return;
+                }
+
+                for (let i = 0; i < layers.length; i++) {
+                    const layer = layers[i];
+                    const material = layer.children[0].value;
+                    const materialData = materials[material];
+                    
+                    if (materialData.type === 'placeholder') {
+                        isValid = false;
+                        break;
+                    }
+                    
+                    if (materialData.type === 'airgap') {
+                        const thickness = parseFloat(layer.children[1].value);
+                        if (isNaN(thickness) || thickness < 0) {
+                            isValid = false;
+                            break;
+                        }
+                        totalResistance += getAirGapResistance(thickness);
+                    } else if (materialData.type === 'lambda') {
+                        const thickness = parseFloat(layer.children[1].value);
+                        const lambda = parseFloat(layer.children[2].value);
+
+                        if (isNaN(thickness) || thickness <= 0 || isNaN(lambda) || lambda <= 0) {
+                            isValid = false;
+                            break;
+                        }
+                        const thicknessInMeters = thickness / 1000;
+                        totalResistance += (thicknessInMeters / lambda);
+                    }
+                }
+
+                const internalTemp = parseFloat(internalTempInput.value);
+                const externalTemp = parseFloat(externalTempInput.value);
+                const area = parseFloat(areaInput.value);
+
+                if (!isValid || isNaN(internalTemp) || isNaN(externalTemp) || isNaN(area) || area <= 0) {
+                    alert('Please ensure all fields have valid numerical values. Thickness and Area must be greater than 0.');
+                    return;
+                }
+                
+                if (totalResistance === 0) {
+                    alert('The total resistance cannot be zero. Please check your inputs.');
+                    return;
+                }
+
+                const uValue = 1 / totalResistance;
+                const tempDiff = internalTemp - externalTemp;
+                const heatLossWatts = uValue * area * tempDiff;
+                const heatLossKW = heatLossWatts / 1000;
+
+                totalRValueDisplay.textContent = totalResistance.toFixed(3);
+                uValueDisplay.textContent = uValue.toFixed(3);
+                heatLossDisplay.textContent = heatLossKW.toFixed(3);
+                
+                resultsContainer.classList.remove('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
