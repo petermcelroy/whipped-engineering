@@ -1,0 +1,231 @@
+<!-- Cable Sizing Calculator -->
+<link href="https://fonts.googleapis.com/css?family=Lato:300&display=swap" rel="stylesheet">
+<style>
+  body, div, h3, h4, label, input, select, button, table, th, td, p {
+    font-family: 'Lato', Arial, sans-serif;
+    font-weight: 300;
+  }
+  .input-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+  }
+  .input-row label {
+    min-width: 180px;
+    margin-bottom: 0;
+  }
+  .input-row select, .input-row input {
+    flex: 1;
+    min-width: 100px;
+    padding: 4px 8px;
+    font-size: 1em;
+    box-sizing: border-box;
+  }
+</style>
+<div style="max-width:700px;padding:20px;border:1px solid #ccc;border-radius:8px;">
+  <h3>Cable Sizing Calculator</h3>
+  <div class="input-row">
+    <label for="cableType">Cable Type:</label>
+    <select id="cableType">
+      <option value="cu">Copper</option>
+      <option value="al">Aluminium</option>
+    </select>
+  </div>
+  <div class="input-row">
+    <label for="installation">Installation Method:</label>
+    <select id="installation">
+      <option value="A">Clipped direct (A)</option>
+      <option value="B">In conduit (B)</option>
+      <option value="C">Trunking (C)</option>
+      <option value="D">Buried (D)</option>
+    </select>
+  </div>
+  <div class="input-row">
+    <label for="coreCount">Number of Cores:</label>
+    <select id="coreCount">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+    </select>
+  </div>
+  <div class="input-row">
+    <label for="current">Design Current (A):</label>
+    <input type="number" id="current" min="0" step="0.1">
+  </div>
+  <div class="input-row">
+    <label for="length">Cable Length (m):</label>
+    <input type="number" id="length" min="0" step="0.1">
+  </div>
+  <div class="input-row">
+    <label for="voltage">System Voltage (V):</label>
+    <input type="number" id="voltage" min="0" step="1" value="230">
+  </div>
+  <div class="input-row">
+    <label for="voltDropLimit">Max Volt Drop (V):</label>
+    <input type="number" id="voltDropLimit" min="0" step="0.1" value="11.5">
+  </div>
+  <div class="input-row">
+    <label for="sizeSelect">Cable Size (mm²):</label>
+    <select id="sizeSelect">
+      <option value="">-- Auto Select --</option>
+      <option value="1.5">1.5</option>
+      <option value="2.5">2.5</option>
+      <option value="4">4</option>
+      <option value="6">6</option>
+      <option value="10">10</option>
+      <option value="16">16</option>
+      <option value="25">25</option>
+      <option value="35">35</option>
+      <option value="50">50</option>
+      <option value="70">70</option>
+      <option value="95">95</option>
+      <option value="120">120</option>
+      <option value="150">150</option>
+      <option value="185">185</option>
+      <option value="240">240</option>
+    </select>
+  </div>
+  <button onclick="calculateCable()">Calculate</button>
+  <p id="result"></p>
+  <h4>Last 10 Calculations</h4>
+  <table border="1" cellpadding="4" id="resultsTable">
+    <thead>
+      <tr>
+        <th>Cable Type</th>
+        <th>Install</th>
+        <th>Cores</th>
+        <th>Size (mm²)</th>
+        <th>Current (A)</th>
+        <th>Length (m)</th>
+        <th>Volt Drop (V)</th>
+        <th>Volt Drop (%)</th>
+      </tr>
+    </thead>
+    <tbody id="resultsBody"></tbody>
+  </table>
+</div>
+<script>
+// Sample tables for current-carrying capacity (A) and volt drop (mV/A/m) for copper, 2-core, clipped direct
+const cableData = {
+  cu: {
+    A: {
+      1:  { cap: [19, 27, 36, 46, 62, 82, 107, 131, 157, 183, 212, 241, 271, 309, 353], vd: [29, 18, 11, 7.3, 4.4, 2.8, 1.75, 1.25, 0.98, 0.78, 0.62, 0.51, 0.43, 0.37, 0.32] },
+      2:  { cap: [19, 27, 36, 46, 62, 82, 107, 131, 157, 183, 212, 241, 271, 309, 353], vd: [29, 18, 11, 7.3, 4.4, 2.8, 1.75, 1.25, 0.98, 0.78, 0.62, 0.51, 0.43, 0.37, 0.32] },
+      3:  { cap: [17.5, 24, 32, 41, 54, 70, 89, 108, 129, 151, 175, 199, 224, 255, 291], vd: [29, 18, 11, 7.3, 4.4, 2.8, 1.75, 1.25, 0.98, 0.78, 0.62, 0.51, 0.43, 0.37, 0.32] },
+      4:  { cap: [17.5, 24, 32, 41, 54, 70, 89, 108, 129, 151, 175, 199, 224, 255, 291], vd: [29, 18, 11, 7.3, 4.4, 2.8, 1.75, 1.25, 0.98, 0.78, 0.62, 0.51, 0.43, 0.37, 0.32] },
+      5:  { cap: [17.5, 24, 32, 41, 54, 70, 89, 108, 129, 151, 175, 199, 224, 255, 291], vd: [29, 18, 11, 7.3, 4.4, 2.8, 1.75, 1.25, 0.98, 0.78, 0.62, 0.51, 0.43, 0.37, 0.32] }
+    }
+    // Add more installation methods as needed
+  },
+  al: {
+    A: {
+      1:  { cap: [16, 21, 28, 36, 48, 63, 80, 98, 117, 137, 159, 181, 204, 233, 266], vd: [47, 29, 18, 12, 7.2, 4.6, 2.9, 2.1, 1.6, 1.3, 1.0, 0.82, 0.69, 0.59, 0.51] },
+      2:  { cap: [16, 21, 28, 36, 48, 63, 80, 98, 117, 137, 159, 181, 204, 233, 266], vd: [47, 29, 18, 12, 7.2, 4.6, 2.9, 2.1, 1.6, 1.3, 1.0, 0.82, 0.69, 0.59, 0.51] },
+      3:  { cap: [14.5, 19, 25, 32, 43, 56, 71, 87, 104, 122, 142, 162, 183, 209, 239], vd: [47, 29, 18, 12, 7.2, 4.6, 2.9, 2.1, 1.6, 1.3, 1.0, 0.82, 0.69, 0.59, 0.51] },
+      4:  { cap: [14.5, 19, 25, 32, 43, 56, 71, 87, 104, 122, 142, 162, 183, 209, 239], vd: [47, 29, 18, 12, 7.2, 4.6, 2.9, 2.1, 1.6, 1.3, 1.0, 0.82, 0.69, 0.59, 0.51] },
+      5:  { cap: [14.5, 19, 25, 32, 43, 56, 71, 87, 104, 122, 142, 162, 183, 209, 239], vd: [47, 29, 18, 12, 7.2, 4.6, 2.9, 2.1, 1.6, 1.3, 1.0, 0.82, 0.69, 0.59, 0.51] }
+    }
+    // Add more installation methods as needed
+  }
+};
+
+const sizes = [1.5,2.5,4,6,10,16,25,35,50,70,95,120,150,185,240];
+
+let history = [];
+
+function calculateCable() {
+  const cableType = document.getElementById('cableType').value;
+  const installation = document.getElementById('installation').value;
+  const coreCount = document.getElementById('coreCount').value;
+  const current = parseFloat(document.getElementById('current').value) || 0;
+  const length = parseFloat(document.getElementById('length').value) || 0;
+  const voltage = parseFloat(document.getElementById('voltage').value) || 230;
+  const voltDropLimit = parseFloat(document.getElementById('voltDropLimit').value) || 11.5;
+  let size = document.getElementById('sizeSelect').value;
+
+  // Get tables for selected cable type, install, and core count
+  let capTable, vdTable;
+  try {
+    capTable = cableData[cableType][installation][coreCount].cap;
+    vdTable = cableData[cableType][installation][coreCount].vd;
+  } catch {
+    document.getElementById('result').innerText = "No data for this combination.";
+    return;
+  }
+
+  let idx = -1;
+  if (size) {
+    idx = sizes.indexOf(parseFloat(size));
+    if (idx === -1) {
+      document.getElementById('result').innerText = "Invalid cable size.";
+      return;
+    }
+    if (capTable[idx] < current) {
+      document.getElementById('result').innerText = "Selected cable size is too small for the current.";
+      return;
+    }
+  } else {
+    // Auto-select the smallest size that meets the current
+    for (let i = 0; i < sizes.length; i++) {
+      if (capTable[i] >= current) {
+        idx = i;
+        size = sizes[i];
+        break;
+      }
+    }
+    if (idx === -1) {
+      document.getElementById('result').innerText = "No suitable cable size found.";
+      return;
+    }
+  }
+
+  // Calculate volt drop (V) and percent
+  const voltDrop = vdTable[idx] * current * length / 1000; // mV/A/m * A * m / 1000 = V
+  const voltDropPercent = (voltDrop / voltage) * 100;
+
+  // Check volt drop
+  let resultMsg = `Cable size: ${size} mm²<br>Volt drop: ${voltDrop.toFixed(2)} V (${voltDropPercent.toFixed(2)}%)`;
+  if (voltDrop > voltDropLimit) {
+    resultMsg += `<br><span style="color:red;">Warning: Volt drop exceeds limit!</span>`;
+  } else {
+    resultMsg += `<br><span style="color:green;">Volt drop within limit.</span>`;
+  }
+
+  document.getElementById('result').innerHTML = resultMsg;
+
+  // Add to history
+  history.unshift({
+    cableType: cableType === "cu" ? "Copper" : "Aluminium",
+    installation,
+    coreCount,
+    size,
+    current,
+    length,
+    voltDrop: voltDrop.toFixed(2),
+    voltDropPercent: voltDropPercent.toFixed(2)
+  });
+  if (history.length > 10) history.pop();
+  updateResultsTable();
+}
+
+function updateResultsTable() {
+  const tbody = document.getElementById('resultsBody');
+  tbody.innerHTML = '';
+  history.forEach(item => {
+    const row = `<tr>
+      <td>${item.cableType}</td>
+      <td>${item.installation}</td>
+      <td>${item.coreCount}</td>
+      <td>${item.size}</td>
+      <td>${item.current}</td>
+      <td>${item.length}</td>
+      <td>${item.voltDrop}</td>
+      <td>${item.voltDropPercent}</td>
+    </tr>`;
+    tbody.innerHTML += row;
+  });
+}
+</script>
