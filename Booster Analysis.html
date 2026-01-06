@@ -3,154 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Engineering Booster Set Calculator | PMCE Services</title>
+    <title>Advanced Booster Set Resistance Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #f1f5f9; color: #0f172a; font-family: 'Inter', sans-serif; }
-        .card { background: white; border-radius: 12px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; }
-        .input-std { @apply mt-1 block w-full border border-slate-300 rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm; }
+        body { background-color: #f8fafc; color: #1e293b; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        @media print { .no-print { display: none; } }
     </style>
 </head>
 <body class="p-4 md:p-8">
-    <div class="max-w-7xl mx-auto">
-        <header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-                <h1 class="text-4xl font-black text-slate-900 tracking-tight">PMCE <span class="text-blue-600">SERVICES</span></h1>
-                <p class="text-slate-500 font-medium">Advanced Hydraulic & Loading Unit Analysis per BS EN 806-3</p>
-            </div>
-            <div class="flex gap-2 no-print">
-                <button onclick="exportToCSV()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Export to Excel (.csv)
-                </button>
-                <div class="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-mono flex items-center">
-                    System: Cold Water Booster
-                </div>
-            </div>
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-slate-900">Coldwater Booster Resistance Calculator</h1>
+            <p class="text-slate-600">Calculate cumulative head loss across multiple pipe sections using the Hazen-Williams equation ($C=140$).</p>
         </header>
 
-        <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
-            
-            <!-- LEFT: APARTMENT TEMPLATES -->
-            <div class="xl:col-span-1 space-y-6">
-                <div class="card p-6 border-l-4 border-l-green-500">
-                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                        Appliance LUs
-                    </h2>
-                    <div class="space-y-3 text-sm" id="lu-template-inputs">
-                        <div class="flex justify-between items-center bg-slate-50 p-2 rounded">
-                            <span>WC (6L Flush)</span>
-                            <input type="number" id="lu-wc" value="1" step="0.5" oninput="calculate()" class="w-12 text-center rounded border">
-                        </div>
-                        <div class="flex justify-between items-center bg-slate-50 p-2 rounded">
-                            <span>WHB / Bidet</span>
-                            <input type="number" id="lu-whb" value="1" step="0.5" oninput="calculate()" class="w-12 text-center rounded border">
-                        </div>
-                        <div class="flex justify-between items-center bg-slate-50 p-2 rounded">
-                            <span>Kitchen Sink</span>
-                            <input type="number" id="lu-sink" value="3" step="0.5" oninput="calculate()" class="w-12 text-center rounded border">
-                        </div>
-                        <div class="flex justify-between items-center bg-slate-50 p-2 rounded">
-                            <span>Shower (std)</span>
-                            <input type="number" id="lu-shower" value="2" step="0.5" oninput="calculate()" class="w-12 text-center rounded border">
-                        </div>
-                        <div class="flex justify-between items-center bg-slate-50 p-2 rounded">
-                            <span>Washing M/C</span>
-                            <input type="number" id="lu-wm" value="3" step="0.5" oninput="calculate()" class="w-12 text-center rounded border">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card p-6 border-l-4 border-l-blue-500">
-                    <h2 class="text-lg font-bold mb-4">Apartment Diversity</h2>
-                    <div class="space-y-4">
-                        <div class="p-3 border rounded-lg">
-                            <h3 class="font-bold text-xs uppercase text-slate-400 mb-2">1P Apartment</h3>
-                            <div class="flex justify-between text-sm">
-                                <span>Appliances:</span>
-                                <span class="font-mono text-blue-600">WC, WHB, SK, SH</span>
-                            </div>
-                            <div class="mt-1 font-bold text-sm">Total: <span id="val-lu-1p">0</span> LUs</div>
-                        </div>
-                        <div class="p-3 border rounded-lg">
-                            <h3 class="font-bold text-xs uppercase text-slate-400 mb-2">2P Apartment</h3>
-                            <div class="flex justify-between text-sm">
-                                <span>Appliances:</span>
-                                <span class="font-mono text-blue-600">+ WM, + Bath</span>
-                            </div>
-                            <div class="mt-1 font-bold text-sm">Total: <span id="val-lu-2p">0</span> LUs</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MIDDLE: NETWORK -->
-            <div class="xl:col-span-2 space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Input Section -->
+            <div class="lg:col-span-2 space-y-6">
                 <div class="card p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold">Network Calculations</h2>
-                        <button onclick="addSection()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition no-print">
-                            + Add Network Section
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">Pipe Sections</h2>
+                        <button onclick="addSection()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition font-medium">
+                            + Add Section
                         </button>
                     </div>
                     
                     <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left border-separate border-spacing-y-2" id="calc-table">
-                            <thead class="text-slate-500 uppercase text-xs">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-slate-50 text-slate-700 uppercase text-xs">
                                 <tr>
-                                    <th class="px-2 pb-2">Location</th>
-                                    <th class="px-2 pb-2 w-16 text-center">1P</th>
-                                    <th class="px-2 pb-2 w-16 text-center">2P</th>
-                                    <th class="px-2 pb-2 w-20 text-center">$\varnothing$ ($mm$)</th>
-                                    <th class="px-2 pb-2 w-16 text-center">Len ($m$)</th>
-                                    <th class="px-2 pb-2 w-12 text-center">Bends</th>
-                                    <th class="px-2 pb-2 w-8 no-print"></th>
+                                    <th class="px-3 py-3">Section Description</th>
+                                    <th class="px-3 py-3 w-24">Flow ($L/s$)</th>
+                                    <th class="px-3 py-3 w-24">$\varnothing$ Int ($mm$)</th>
+                                    <th class="px-3 py-3 w-24">Length ($m$)</th>
+                                    <th class="px-3 py-3 w-24">Bends (Qty)</th>
+                                    <th class="px-3 py-3 w-16"></th>
                                 </tr>
                             </thead>
-                            <tbody id="sections-body"></tbody>
+                            <tbody id="sections-body">
+                                <!-- Dynamic rows added here -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
 
                 <div class="card p-6">
-                    <h2 class="text-xl font-bold mb-4">Site Constants</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <h2 class="text-xl font-semibold mb-4">System Constants</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-400">Static Height ($m$)</label>
-                            <input type="number" id="static-height" value="15" oninput="calculate()" class="input-std font-mono text-lg">
+                            <label class="block text-sm font-medium text-slate-700">Static Height ($m$)</label>
+                            <input type="number" id="static-height" value="10" step="0.5" class="mt-1 block w-full border border-slate-300 rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <p class="text-xs text-slate-500 mt-1">Vertical lift from booster to highest outlet.</p>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-400">Min. Pressure @ Outlet ($bar$)</label>
-                            <input type="number" id="residual-bar" value="2.0" step="0.1" oninput="calculate()" class="input-std font-mono text-lg">
+                            <label class="block text-sm font-medium text-slate-700">Residual Pressure ($bar$)</label>
+                            <input type="number" id="residual-bar" value="2.0" step="0.1" class="mt-1 block w-full border border-slate-300 rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <p class="text-xs text-slate-500 mt-1">Pressure required at the furthest fixture.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- RIGHT: RESULTS -->
-            <div class="xl:col-span-1 space-y-6">
-                <div class="card p-6 sticky top-8 border-t-8 border-t-blue-600">
-                    <h2 class="text-xl font-black mb-6 uppercase tracking-widest text-slate-400">Final Duty</h2>
-                    <div class="space-y-6">
-                        <div>
-                            <div class="text-xs font-bold uppercase text-slate-400">Total System Demand</div>
-                            <div class="text-3xl font-black text-slate-900 font-mono" id="res-total-flow">0.00 L/s</div>
-                            <div class="text-xs text-slate-500" id="res-total-lu">0.0 Total LUs</div>
+            <!-- Results Section -->
+            <div class="space-y-6">
+                <div class="card p-6 sticky top-8 border-t-4 border-blue-600">
+                    <h2 class="text-xl font-semibold mb-6">Total Calculation</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                            <span class="text-slate-600">Friction Head Loss:</span>
+                            <span class="font-mono font-bold" id="res-friction">0.00 mH₂O</span>
                         </div>
-                        <div class="pt-6 border-t border-slate-100 space-y-2">
-                            <div class="flex justify-between"><span class="text-sm text-slate-500 uppercase">Friction Loss</span><span class="font-mono font-bold" id="res-friction">0.00 mH₂O</span></div>
-                            <div class="flex justify-between"><span class="text-sm text-slate-500 uppercase">Static Lift</span><span class="font-mono font-bold" id="res-static">0.00 mH₂O</span></div>
-                            <div class="flex justify-between"><span class="text-sm text-slate-500 uppercase">Target Resid.</span><span class="font-mono font-bold" id="res-residual">0.00 mH₂O</span></div>
+                        <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                            <span class="text-slate-600">Static Head:</span>
+                            <span class="font-mono font-bold" id="res-static">0.00 mH₂O</span>
                         </div>
-                        <div class="bg-blue-600 p-6 rounded-2xl text-white shadow-lg">
-                            <div class="text-xs font-bold uppercase opacity-80 mb-1">Calculated Booster Head</div>
-                            <div class="text-4xl font-black font-mono" id="res-total-bar">0.00 bar</div>
-                            <div class="text-sm font-bold opacity-80" id="res-total-head">0.00 mH₂O</div>
+                        <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                            <span class="text-slate-600">Target Residual:</span>
+                            <span class="font-mono font-bold" id="res-residual">0.00 mH₂O</span>
                         </div>
-                        <div id="warnings" class="space-y-2 no-print"></div>
+                        <div class="pt-4 flex justify-between items-center text-lg">
+                            <span class="font-bold text-slate-900">Total Req. Head:</span>
+                            <span class="font-mono font-extrabold text-blue-700" id="res-total-head">0.00 mH₂O</span>
+                        </div>
+                        <div class="flex justify-between items-center text-2xl bg-blue-50 p-4 rounded-xl">
+                            <span class="font-bold text-blue-900">Duty Point:</span>
+                            <span class="font-mono font-black text-blue-900" id="res-total-bar">0.00 bar</span>
+                        </div>
+                    </div>
+
+                    <div id="warnings" class="mt-6 space-y-2">
+                        <!-- Velocity warnings appear here -->
                     </div>
                 </div>
             </div>
@@ -165,118 +109,92 @@
             const tbody = document.getElementById('sections-body');
             const row = document.createElement('tr');
             row.id = `section-${sectionCount}`;
-            row.className = "bg-white group transition-all duration-200 hover:shadow-md";
+            row.className = "border-b border-slate-100 hover:bg-slate-50 transition";
+            
             row.innerHTML = `
-                <td class="px-2 py-3 border-b border-slate-100"><input type="text" placeholder="Section Name" class="w-full bg-transparent text-sm font-bold focus:outline-none section-name"></td>
-                <td class="px-2 py-3 border-b border-slate-100 text-center"><input type="number" value="0" min="0" oninput="calculate()" class="w-full p-1 border rounded text-center section-qty1p font-mono"></td>
-                <td class="px-2 py-3 border-b border-slate-100 text-center"><input type="number" value="0" min="0" oninput="calculate()" class="w-full p-1 border rounded text-center section-qty2p font-mono"></td>
-                <td class="px-2 py-3 border-b border-slate-100 text-center"><input type="number" value="50" oninput="calculate()" class="w-full p-1 border rounded text-center section-dia font-mono"></td>
-                <td class="px-2 py-3 border-b border-slate-100 text-center"><input type="number" value="10" oninput="calculate()" class="w-full p-1 border rounded text-center section-len font-mono"></td>
-                <td class="px-2 py-3 border-b border-slate-100 text-center"><input type="number" value="5" oninput="calculate()" class="w-full p-1 border rounded text-center section-bends font-mono"></td>
-                <td class="px-2 py-3 border-b border-slate-100 text-right no-print"><button onclick="removeSection(${sectionCount})" class="text-slate-300 hover:text-red-500 transition">&times;</button></td>
+                <td class="px-3 py-4">
+                    <input type="text" placeholder="e.g. Main Header" class="w-full bg-transparent focus:outline-none border-b border-transparent focus:border-blue-500">
+                </td>
+                <td class="px-3 py-4">
+                    <input type="number" step="0.01" value="1.5" oninput="calculate()" class="w-full p-1 border rounded section-flow">
+                </td>
+                <td class="px-3 py-4">
+                    <input type="number" value="32" oninput="calculate()" class="w-full p-1 border rounded section-dia">
+                </td>
+                <td class="px-3 py-4">
+                    <input type="number" value="10" oninput="calculate()" class="w-full p-1 border rounded section-len">
+                </td>
+                <td class="px-3 py-4">
+                    <input type="number" value="4" oninput="calculate()" class="w-full p-1 border rounded section-bends">
+                </td>
+                <td class="px-3 py-4 text-right">
+                    <button onclick="removeSection(${sectionCount})" class="text-red-400 hover:text-red-600 text-xl font-bold">&times;</button>
+                </td>
             `;
             tbody.appendChild(row);
             calculate();
         }
 
-        function removeSection(id) { document.getElementById(`section-${id}`).remove(); calculate(); }
+        function removeSection(id) {
+            const row = document.getElementById(`section-${id}`);
+            row.remove();
+            calculate();
+        }
 
         function calculate() {
-            const luWC = parseFloat(document.getElementById('lu-wc').value) || 0;
-            const luWHB = parseFloat(document.getElementById('lu-whb').value) || 0;
-            const luSink = parseFloat(document.getElementById('lu-sink').value) || 0;
-            const luShower = parseFloat(document.getElementById('lu-shower').value) || 0;
-            const luWM = parseFloat(document.getElementById('lu-wm').value) || 0;
-
-            const lu1pTotal = luWC + luWHB + luSink + luShower;
-            const lu2pTotal = lu1pTotal + luWM + 4;
-
-            document.getElementById('val-lu-1p').innerText = lu1pTotal.toFixed(1);
-            document.getElementById('val-lu-2p').innerText = lu2pTotal.toFixed(1);
-
+            const C = 140; // Hazen-Williams constant for Copper/Plastic
             let totalFrictionLoss = 0;
-            let totalSiteLU = 0;
             let warningsHtml = '';
+
             const rows = document.querySelectorAll('#sections-body tr');
             
             rows.forEach((row, index) => {
-                const q1 = parseFloat(row.querySelector('.section-qty1p').value) || 0;
-                const q2 = parseFloat(row.querySelector('.section-qty2p').value) || 0;
+                const Q_ls = parseFloat(row.querySelector('.section-flow').value) || 0;
                 const d_mm = parseFloat(row.querySelector('.section-dia').value) || 1;
                 const L_m = parseFloat(row.querySelector('.section-len').value) || 0;
-                const b = parseFloat(row.querySelector('.section-bends').value) || 0;
+                const bends = parseFloat(row.querySelector('.section-bends').value) || 0;
 
-                const sLU = (q1 * lu1pTotal) + (q2 * lu2pTotal);
-                totalSiteLU += sLU;
-
-                const Q_ls = 0.2 * Math.sqrt(sLU);
+                // 1. Velocity Check (V = Q/A)
                 const Q_m3s = Q_ls / 1000;
                 const d_m = d_mm / 1000;
+                const area = Math.PI * Math.pow(d_m / 2, 2);
+                const velocity = Q_m3s / area;
 
-                if (sLU > 0) {
-                    const area = Math.PI * Math.pow(d_m / 2, 2);
-                    const v = Q_m3s / area;
-                    if (v > 2.0) warningsHtml += `<div class="bg-red-50 text-red-700 text-xs p-2 rounded border border-red-200">❌ ${index+1}: Velocity Critical (${v.toFixed(2)}m/s)</div>`;
-                    
-                    const L_eq = L_m + (b * (30 * d_m));
-                    const h_f = (10.67 * L_eq * Math.pow(Q_m3s, 1.852)) / (Math.pow(140, 1.852) * Math.pow(d_m, 4.87));
+                if (velocity > 2.0) {
+                    warningsHtml += `<div class="text-xs bg-orange-100 text-orange-800 p-2 rounded">⚠️ Section ${index+1}: Velocity is high (${velocity.toFixed(2)} m/s)</div>`;
+                } else if (velocity < 0.5 && Q_ls > 0) {
+                    warningsHtml += `<div class="text-xs bg-blue-100 text-blue-800 p-2 rounded">ℹ️ Section ${index+1}: Low velocity (${velocity.toFixed(2)} m/s)</div>`;
+                }
+
+                // 2. Equivalent Length (Approx: Elbow = 30 * Pipe Diameters)
+                // Using a simplified 1.5m equivalent per bend for common sizes as a baseline
+                const L_eq = L_m + (bends * (30 * d_m));
+
+                // 3. Hazen-Williams Formula
+                // h_f = 10.67 * L * Q^1.852 / (C^1.852 * d^4.87)
+                if (Q_m3s > 0) {
+                    const h_f = (10.67 * L_eq * Math.pow(Q_m3s, 1.852)) / (Math.pow(C, 1.852) * Math.pow(d_m, 4.87));
                     totalFrictionLoss += h_f;
                 }
             });
 
-            const boosterFlow = 0.2 * Math.sqrt(totalSiteLU);
-            const sH = parseFloat(document.getElementById('static-height').value) || 0;
-            const rB = parseFloat(document.getElementById('residual-bar').value) || 0;
-            const rH = rB * 10.197;
-            const tH = totalFrictionLoss + sH + rH;
+            const staticHead = parseFloat(document.getElementById('static-height').value) || 0;
+            const residualBar = parseFloat(document.getElementById('residual-bar').value) || 0;
+            const residualHead = residualBar * 10.197; // 1 bar = 10.197 mH2O
 
-            document.getElementById('res-total-flow').innerText = `${boosterFlow.toFixed(2)} L/s`;
-            document.getElementById('res-total-lu').innerText = `${totalSiteLU.toFixed(1)} Total LUs`;
+            const totalHead = totalFrictionLoss + staticHead + residualHead;
+            const totalBar = totalHead / 10.197;
+
+            // Update UI
             document.getElementById('res-friction').innerText = `${totalFrictionLoss.toFixed(2)} mH₂O`;
-            document.getElementById('res-static').innerText = `${sH.toFixed(2)} mH₂O`;
-            document.getElementById('res-residual').innerText = `${rH.toFixed(2)} mH₂O`;
-            document.getElementById('res-total-head').innerText = `${tH.toFixed(2)} mH₂O`;
-            document.getElementById('res-total-bar').innerText = `${(tH / 10.197).toFixed(2)} bar`;
+            document.getElementById('res-static').innerText = `${staticHead.toFixed(2)} mH₂O`;
+            document.getElementById('res-residual').innerText = `${residualHead.toFixed(2)} mH₂O`;
+            document.getElementById('res-total-head').innerText = `${totalHead.toFixed(2)} mH₂O`;
+            document.getElementById('res-total-bar').innerText = `${totalBar.toFixed(2)} bar`;
             document.getElementById('warnings').innerHTML = warningsHtml;
         }
 
-        function exportToCSV() {
-            let csv = "PMCE SERVICES - BOOSTER CALCULATION REPORT\n\n";
-            csv += "Section,Qty 1P,Qty 2P,Diameter (mm),Length (m),Bends,Loading Units,Flow (L/s)\n";
-            
-            const lu1p = parseFloat(document.getElementById('val-lu-1p').innerText);
-            const lu2p = parseFloat(document.getElementById('val-lu-2p').innerText);
-            
-            document.querySelectorAll('#sections-body tr').forEach(row => {
-                const name = row.querySelector('.section-name').value || "Unnamed Section";
-                const q1 = row.querySelector('.section-qty1p').value;
-                const q2 = row.querySelector('.section-qty2p').value;
-                const dia = row.querySelector('.section-dia').value;
-                const len = row.querySelector('.section-len').value;
-                const bends = row.querySelector('.section-bends').value;
-                const sLU = (q1 * lu1p) + (q2 * lu2p);
-                const Q = 0.2 * Math.sqrt(sLU);
-                
-                csv += `${name},${q1},${q2},${dia},${len},${bends},${sLU.toFixed(1)},${Q.toFixed(3)}\n`;
-            });
-
-            csv += `\nSUMMARY\n`;
-            csv += `Total System Flow,${document.getElementById('res-total-flow').innerText}\n`;
-            csv += `Friction Loss,${document.getElementById('res-friction').innerText}\n`;
-            csv += `Static Lift,${document.getElementById('res-static').innerText}\n`;
-            csv += `Total Duty,${document.getElementById('res-total-bar').innerText}\n`;
-
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('hidden', '');
-            a.setAttribute('href', url);
-            a.setAttribute('download', 'PMCE_Booster_Calculation.csv');
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
+        // Initialize with one section
         window.onload = addSection;
     </script>
 </body>

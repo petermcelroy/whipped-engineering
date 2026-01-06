@@ -3,199 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Booster Set Resistance Calculator</title>
+    <title>Engineering Hub | PMCE Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #f8fafc; color: #1e293b; }
-        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        body { background-color: #f1f5f9; color: #0f172a; font-family: 'Inter', sans-serif; }
+        .tool-card { 
+            background: white; 
+            border-radius: 12px; 
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        .tool-card:hover { 
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            border-color: #3b82f6;
+        }
     </style>
 </head>
-<body class="p-4 md:p-8">
-    <div class="max-w-6xl mx-auto">
-        <header class="mb-8">
-            <h1 class="text-3xl font-bold text-slate-900">Coldwater Booster Resistance Calculator</h1>
-            <p class="text-slate-600">Calculate cumulative head loss across multiple pipe sections using the Hazen-Williams equation ($C=140$).</p>
+<body class="min-h-screen flex flex-col">
+    <div class="max-w-5xl mx-auto px-6 py-12 flex-grow w-full">
+        <header class="mb-16 border-b border-slate-200 pb-8 text-center md:text-left">
+            <h1 class="text-5xl font-black text-slate-900 tracking-tight">PMCE <span class="text-blue-600">SERVICES</span></h1>
+            <p class="text-slate-500 mt-2 font-medium text-lg">Professional Engineering Tools & Hydraulic Analysis Hub</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Input Section -->
-            <div class="lg:col-span-2 space-y-6">
-                <div class="card p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold">Pipe Sections</h2>
-                        <button onclick="addSection()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition font-medium">
-                            + Add Section
-                        </button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Tool 1: Booster Resistance Calculator -->
+            <a href="booster_calc.html" class="tool-card p-8 group">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="p-3 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left">
-                            <thead class="bg-slate-50 text-slate-700 uppercase text-xs">
-                                <tr>
-                                    <th class="px-3 py-3">Section Description</th>
-                                    <th class="px-3 py-3 w-24">Flow ($L/s$)</th>
-                                    <th class="px-3 py-3 w-24">$\varnothing$ Int ($mm$)</th>
-                                    <th class="px-3 py-3 w-24">Length ($m$)</th>
-                                    <th class="px-3 py-3 w-24">Bends (Qty)</th>
-                                    <th class="px-3 py-3 w-16"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="sections-body">
-                                <!-- Dynamic rows added here -->
-                            </tbody>
-                        </table>
-                    </div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Standard: BS EN 806-3</span>
                 </div>
-
-                <div class="card p-6">
-                    <h2 class="text-xl font-semibold mb-4">System Constants</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700">Static Height ($m$)</label>
-                            <input type="number" id="static-height" value="10" step="0.5" class="mt-1 block w-full border border-slate-300 rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <p class="text-xs text-slate-500 mt-1">Vertical lift from booster to highest outlet.</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700">Residual Pressure ($bar$)</label>
-                            <input type="number" id="residual-bar" value="2.0" step="0.1" class="mt-1 block w-full border border-slate-300 rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <p class="text-xs text-slate-500 mt-1">Pressure required at the furthest fixture.</p>
-                        </div>
-                    </div>
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">Booster Resistance Calculator</h2>
+                <p class="text-slate-600 mb-6 text-sm leading-relaxed">
+                    Advanced Loading Unit (LU) analysis for 1P/2P apartments. Calculates friction losses, velocity constraints, and system duty points with CSV export functionality.
+                </p>
+                <div class="flex items-center text-blue-600 font-bold text-sm">
+                    Launch Tool 
+                    <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                 </div>
-            </div>
+            </a>
 
-            <!-- Results Section -->
-            <div class="space-y-6">
-                <div class="card p-6 sticky top-8 border-t-4 border-blue-600">
-                    <h2 class="text-xl font-semibold mb-6">Total Calculation</h2>
-                    
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center pb-2 border-b border-slate-100">
-                            <span class="text-slate-600">Friction Head Loss:</span>
-                            <span class="font-mono font-bold" id="res-friction">0.00 mH₂O</span>
-                        </div>
-                        <div class="flex justify-between items-center pb-2 border-b border-slate-100">
-                            <span class="text-slate-600">Static Head:</span>
-                            <span class="font-mono font-bold" id="res-static">0.00 mH₂O</span>
-                        </div>
-                        <div class="flex justify-between items-center pb-2 border-b border-slate-100">
-                            <span class="text-slate-600">Target Residual:</span>
-                            <span class="font-mono font-bold" id="res-residual">0.00 mH₂O</span>
-                        </div>
-                        <div class="pt-4 flex justify-between items-center text-lg">
-                            <span class="font-bold text-slate-900">Total Req. Head:</span>
-                            <span class="font-mono font-extrabold text-blue-700" id="res-total-head">0.00 mH₂O</span>
-                        </div>
-                        <div class="flex justify-between items-center text-2xl bg-blue-50 p-4 rounded-xl">
-                            <span class="font-bold text-blue-900">Duty Point:</span>
-                            <span class="font-mono font-black text-blue-900" id="res-total-bar">0.00 bar</span>
-                        </div>
+            <!-- Tool 2: Advanced Branch Analysis (Placeholder for your other file) -->
+            <a href="booster_analysis.html" class="tool-card p-8 group">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="p-3 bg-slate-50 text-slate-600 rounded-lg group-hover:bg-slate-800 group-hover:text-white transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     </div>
-
-                    <div id="warnings" class="mt-6 space-y-2">
-                        <!-- Velocity warnings appear here -->
-                    </div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Standard: CIBSE Guide G</span>
                 </div>
-            </div>
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">Advanced Branch Analysis</h2>
+                <p class="text-slate-600 mb-6 text-sm leading-relaxed">
+                    Detailed secondary branch modeling and diversity calculations for complex risers and high-occupancy residential developments.
+                </p>
+                <div class="flex items-center text-slate-900 font-bold text-sm">
+                    Launch Tool 
+                    <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                </div>
+            </a>
         </div>
+
+        <footer class="mt-20 pt-8 border-t border-slate-200 text-center text-slate-400 text-sm">
+            <p>&copy; 2024 PMCE Services. All hydraulic calculations utilize $Q = 0.2 \sqrt{\sum LU}$ and Hazen-Williams friction models.</p>
+        </footer>
     </div>
-
-    <script>
-        let sectionCount = 0;
-
-        function addSection() {
-            sectionCount++;
-            const tbody = document.getElementById('sections-body');
-            const row = document.createElement('tr');
-            row.id = `section-${sectionCount}`;
-            row.className = "border-b border-slate-100 hover:bg-slate-50 transition";
-            
-            row.innerHTML = `
-                <td class="px-3 py-4">
-                    <input type="text" placeholder="e.g. Main Header" class="w-full bg-transparent focus:outline-none border-b border-transparent focus:border-blue-500">
-                </td>
-                <td class="px-3 py-4">
-                    <input type="number" step="0.01" value="1.5" oninput="calculate()" class="w-full p-1 border rounded section-flow">
-                </td>
-                <td class="px-3 py-4">
-                    <input type="number" value="32" oninput="calculate()" class="w-full p-1 border rounded section-dia">
-                </td>
-                <td class="px-3 py-4">
-                    <input type="number" value="10" oninput="calculate()" class="w-full p-1 border rounded section-len">
-                </td>
-                <td class="px-3 py-4">
-                    <input type="number" value="4" oninput="calculate()" class="w-full p-1 border rounded section-bends">
-                </td>
-                <td class="px-3 py-4 text-right">
-                    <button onclick="removeSection(${sectionCount})" class="text-red-400 hover:text-red-600 text-xl font-bold">&times;</button>
-                </td>
-            `;
-            tbody.appendChild(row);
-            calculate();
-        }
-
-        function removeSection(id) {
-            const row = document.getElementById(`section-${id}`);
-            row.remove();
-            calculate();
-        }
-
-        function calculate() {
-            const C = 140; // Hazen-Williams constant for Copper/Plastic
-            let totalFrictionLoss = 0;
-            let warningsHtml = '';
-
-            const rows = document.querySelectorAll('#sections-body tr');
-            
-            rows.forEach((row, index) => {
-                const Q_ls = parseFloat(row.querySelector('.section-flow').value) || 0;
-                const d_mm = parseFloat(row.querySelector('.section-dia').value) || 1;
-                const L_m = parseFloat(row.querySelector('.section-len').value) || 0;
-                const bends = parseFloat(row.querySelector('.section-bends').value) || 0;
-
-                // 1. Velocity Check (V = Q/A)
-                const Q_m3s = Q_ls / 1000;
-                const d_m = d_mm / 1000;
-                const area = Math.PI * Math.pow(d_m / 2, 2);
-                const velocity = Q_m3s / area;
-
-                if (velocity > 2.0) {
-                    warningsHtml += `<div class="text-xs bg-orange-100 text-orange-800 p-2 rounded">⚠️ Section ${index+1}: Velocity is high (${velocity.toFixed(2)} m/s)</div>`;
-                } else if (velocity < 0.5 && Q_ls > 0) {
-                    warningsHtml += `<div class="text-xs bg-blue-100 text-blue-800 p-2 rounded">ℹ️ Section ${index+1}: Low velocity (${velocity.toFixed(2)} m/s)</div>`;
-                }
-
-                // 2. Equivalent Length (Approx: Elbow = 30 * Pipe Diameters)
-                // Using a simplified 1.5m equivalent per bend for common sizes as a baseline
-                const L_eq = L_m + (bends * (30 * d_m));
-
-                // 3. Hazen-Williams Formula
-                // h_f = 10.67 * L * Q^1.852 / (C^1.852 * d^4.87)
-                if (Q_m3s > 0) {
-                    const h_f = (10.67 * L_eq * Math.pow(Q_m3s, 1.852)) / (Math.pow(C, 1.852) * Math.pow(d_m, 4.87));
-                    totalFrictionLoss += h_f;
-                }
-            });
-
-            const staticHead = parseFloat(document.getElementById('static-height').value) || 0;
-            const residualBar = parseFloat(document.getElementById('residual-bar').value) || 0;
-            const residualHead = residualBar * 10.197; // 1 bar = 10.197 mH2O
-
-            const totalHead = totalFrictionLoss + staticHead + residualHead;
-            const totalBar = totalHead / 10.197;
-
-            // Update UI
-            document.getElementById('res-friction').innerText = `${totalFrictionLoss.toFixed(2)} mH₂O`;
-            document.getElementById('res-static').innerText = `${staticHead.toFixed(2)} mH₂O`;
-            document.getElementById('res-residual').innerText = `${residualHead.toFixed(2)} mH₂O`;
-            document.getElementById('res-total-head').innerText = `${totalHead.toFixed(2)} mH₂O`;
-            document.getElementById('res-total-bar').innerText = `${totalBar.toFixed(2)} bar`;
-            document.getElementById('warnings').innerHTML = warningsHtml;
-        }
-
-        // Initialize with one section
-        window.onload = addSection;
-    </script>
 </body>
 </html>
