@@ -84,6 +84,7 @@
             
             // Hazen-Williams (Metric)
             // h = 10.67 * L * (Q^1.852) / (C^1.852 * d^4.87)
+            // lower case
             const C = 140;
             const frictionLoss = (10.67 * L_equiv * Math.pow(Q, 1.852)) / (Math.pow(C, 1.852) * Math.pow(d, 4.87));
             
