@@ -15,7 +15,7 @@
             display: flex;
             flex-direction: column;
             height: 100%;
-            text-decoration: none;
+            cursor: pointer;
         }
         .tool-card:hover { 
             transform: translateY(-5px);
@@ -38,34 +38,19 @@
                 Hydraulics & Networks
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Tool: Booster Analysis -->
-                <a href="booster_analysis.html" target="_blank" class="tool-card p-8 group">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="p-3 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                        </div>
-                        <span class="text-xs font-bold text-slate-400">Advanced Analysis</span>
-                    </div>
-                    <h2 class="text-2xl font-bold text-slate-900 mb-2">Booster Analysis</h2>
-                    <p class="text-slate-600 mb-6 text-sm flex-grow">Detailed Loading Unit (LU) analysis and diversity modeling for residential networks.</p>
-                    <div class="flex items-center text-blue-600 font-bold text-sm">Launch Tool &rarr;</div>
-                </a>
-
-                <!-- Tool: Booster Calc -->
-                <a href="booster_calc.html" target="_blank" class="tool-card p-8 group">
+                <a href="./Booster Analysis.html" class="tool-card p-8 group">
                     <div class="flex items-start justify-between mb-4">
                         <div class="p-3 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         </div>
                         <span class="text-xs font-bold text-slate-400">BS EN 806-3</span>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-900 mb-2">Booster Calc</h2>
-                    <p class="text-slate-600 mb-6 text-sm flex-grow">Basic pressure and flow rate resistance calculations for booster sets.</p>
+                    <h2 class="text-2xl font-bold text-slate-900 mb-2">Booster Resistance</h2>
+                    <p class="text-slate-600 mb-6 text-sm flex-grow">Advanced Loading Unit (LU) analysis for residential developments.</p>
                     <div class="flex items-center text-blue-600 font-bold text-sm">Launch Tool &rarr;</div>
                 </a>
 
-                <!-- Tool: DHN Optimiser -->
-                <a href="dhn_optimiser.html" target="_blank" class="tool-card p-8 group">
+                <a href="./dhn_optimiser.html" class="tool-card p-8 group">
                     <div class="flex items-start justify-between mb-4">
                         <div class="p-3 bg-orange-50 text-orange-600 rounded-lg group-hover:bg-orange-600 group-hover:text-white transition-colors">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
@@ -86,8 +71,7 @@
                 HVAC & Ductwork
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Tool: DuctoC -->
-                <a href="ductoc.html" target="_blank" class="tool-card p-8 group">
+                <a href="./DuctoC.html" class="tool-card p-8 group">
                     <div class="flex items-start justify-between mb-4">
                         <div class="p-3 bg-cyan-50 text-cyan-600 rounded-lg group-hover:bg-cyan-600 group-hover:text-white transition-colors">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
@@ -99,8 +83,7 @@
                     <div class="flex items-center text-cyan-600 font-bold text-sm">Launch Tool &rarr;</div>
                 </a>
 
-                <!-- Tool: DuctoR -->
-                <a href="ductor.html" target="_blank" class="tool-card p-8 group">
+                <a href="./DuctoR.html" class="tool-card p-8 group">
                     <div class="flex items-start justify-between mb-4">
                         <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
@@ -114,54 +97,6 @@
             </div>
         </div>
 
-        <!-- BUILDING PHYSICS -->
-        <div class="mb-12">
-            <h2 class="text-xl font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-                <span class="w-8 h-px bg-slate-300"></span>
-                Building Physics & Thermal
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Tool: U-Value Year -->
-                <a href="uvalue_by_year.html" target="_blank" class="tool-card p-8 group">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="p-3 bg-green-50 text-green-600 rounded-lg group-hover:bg-green-600 group-hover:text-white transition-colors">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </div>
-                        <span class="text-xs font-bold text-slate-400">Regulatory Timeline</span>
-                    </div>
-                    <h2 class="text-2xl font-bold text-slate-900 mb-2">U-Value by Year</h2>
-                    <p class="text-slate-600 mb-6 text-sm flex-grow">Historical tracking of required thermal transmittance ($U_{value}$) in Building Regs.</p>
-                    <div class="flex items-center text-green-600 font-bold text-sm">Launch Tool &rarr;</div>
-                </a>
-
-                <!-- Tool: Thermal Modelling -->
-                <a href="thermal_modelling.html" target="_blank" class="tool-card p-8 group">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="p-3 bg-purple-50 text-purple-600 rounded-lg group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path></svg>
-                        </div>
-                        <span class="text-xs font-bold text-slate-400">Dynamic Analysis</span>
-                    </div>
-                    <h2 class="text-2xl font-bold text-slate-900 mb-2">Thermal Modelling</h2>
-                    <p class="text-slate-600 mb-6 text-sm flex-grow">Interactive tool for dynamic heat loss and thermal bridge analysis.</p>
-                    <div class="flex items-center text-purple-600 font-bold text-sm">Launch Tool &rarr;</div>
-                </a>
-
-                <!-- Tool: U-Value Calc -->
-                <a href="u_value_calc.html" target="_blank" class="tool-card p-8 group">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="p-3 bg-green-50 text-green-600 rounded-lg group-hover:bg-green-600 group-hover:text-white transition-colors">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                        </div>
-                        <span class="text-xs font-bold text-slate-400">ISO 6946</span>
-                    </div>
-                    <h2 class="text-2xl font-bold text-slate-900 mb-2">U-Value Calculator</h2>
-                    <p class="text-slate-600 mb-6 text-sm flex-grow">Standard thermal transmittance calculations for multi-layered elements.</p>
-                    <div class="flex items-center text-green-600 font-bold text-sm">Launch Tool &rarr;</div>
-                </a>
-            </div>
-        </div>
-
         <!-- ELECTRICAL -->
         <div class="mb-12">
             <h2 class="text-xl font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
@@ -169,8 +104,7 @@
                 Electrical Systems
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Tool: Cable Sizing -->
-                <a href="cables.html" target="_blank" class="tool-card p-8 group">
+                <a href="./Cables.html" class="tool-card p-8 group">
                     <div class="flex items-start justify-between mb-4">
                         <div class="p-3 bg-yellow-50 text-yellow-600 rounded-lg group-hover:bg-yellow-600 group-hover:text-white transition-colors">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
@@ -184,9 +118,39 @@
             </div>
         </div>
 
+        <!-- BUILDING PHYSICS -->
+        <div class="mb-12">
+            <h2 class="text-xl font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                <span class="w-8 h-px bg-slate-300"></span>
+                Building Physics & Thermal
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <a href="./u_value_calc.html" class="tool-card p-8 group">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="p-3 bg-green-50 text-green-600 rounded-lg group-hover:bg-green-600 group-hover:text-white transition-colors">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        </div>
+                        <span class="text-xs font-bold text-slate-400">ISO 6946</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 mb-2">U-Value Calculator</h2>
+                    <p class="text-slate-600 mb-6 text-sm flex-grow">Thermal transmittance analysis ($W/m^2K$) for multi-layered elements.</p>
+                    <div class="flex items-center text-green-600 font-bold text-sm">Launch Tool &rarr;</div>
+                </a>
+            </div>
+        </div>
+
         <footer class="mt-20 pt-8 border-t border-slate-200 text-center text-slate-400 text-sm">
-            <p>&copy; 2026 PMCE Services. All hydraulic calculations utilize $Q = 0.2 \sqrt{\sum LU}$.</p>
+            <p>&copy; 2026 PMCE Services. Professional Engineering Dashboard.</p>
         </footer>
     </div>
+
+    <script>
+        // Diagnostic tool: If a link fails, it helps identify the path issue
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                console.log('Attempting to navigate to:', this.getAttribute('href'));
+            });
+        });
+    </script>
 </body>
 </html>
