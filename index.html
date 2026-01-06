@@ -3,98 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booster Set Resistance Calculator</title>
+    <title>Advanced Booster Set Resistance Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: sans-serif; margin: 20px; line-height: 1.6; color: #333; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-        th { background-color: #f4f4f4; }
-        .result-box { background: #e7f3fe; padding: 15px; border-left: 5px solid #2196F3; font-weight: bold; }
-        input { width: 80px; padding: 5px; }
+        body { background-color: #f8fafc; color: #1e293b; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-slate-900">Coldwater Booster Resistance Calculator</h1>
+            <p class="text-slate-600">Calculate cumulative head loss across multiple pipe sections using the Hazen-Williams equation ($C=140$).</p>
+        </header>
 
-    <h2>Coldwater Booster Set Resistance Calculator</h2>
-    <p>This tool calculates total dynamic head (TDH) using the Hazen-Williams method. 
-       Standard C-factor for Copper/Plastics is assumed at <strong>140</strong>.</p>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Input Section -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="card p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">Pipe Sections</h2>
+                        <button onclick="addSection()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition font-medium">
+                            + Add Section
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-slate-50 text-slate-700 uppercase text-xs">
+                                <tr>
+                                    <th class="px-3 py-3">Section Description</th>
+                                    <th class="px-3 py-3 w-24">Flow ($L/s$)</th>
+                                    <th class="px-3 py-3 w-24">$\varnothing$ Int ($mm$)</th>
+                                    <th class="px-3 py-3 w-24">Length ($m$)</th>
+                                    <th class="px-3 py-3 w-24">Bends (Qty)</th>
+                                    <th class="px-3 py-3 w-16"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="sections-body">
+                                <!-- Dynamic rows added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Parameter</th>
-                <th>Value</th>
-                <th>Unit</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Design Flow Rate ($Q$)</td>
-                <td><input type="number" id="flow" value="2.5" step="0.1"></td>
-                <td>L/s</td>
-            </tr>
-            <tr>
-                <td>Internal Pipe Diameter ($d$)</td>
-                <td><input type="number" id="diameter" value="50"></td>
-                <td>mm</td>
-            </tr>
-            <tr>
-                <td>Straight Pipe Length</td>
-                <td><input type="number" id="length" value="30"></td>
-                <td>m</td>
-            </tr>
-            <tr>
-                <td>Number of 90° Bends</td>
-                <td><input type="number" id="bends" value="5"></td>
-                <td>Qty</td>
-            </tr>
-            <tr>
-                <td>Number of Outlets/Valves</td>
-                <td><input type="number" id="outlets" value="2"></td>
-                <td>Qty</td>
-            </tr>
-            <tr>
-                <td>Static Height (Vertical Lift)</td>
-                <td><input type="number" id="static" value="15"></td>
-                <td>m</td>
-            </tr>
-        </tbody>
-    </table>
+                <div class="card p-6">
+                    <h2 class="text-xl font-semibold mb-4">System Constants</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Static Height ($m$)</label>
+                            <input type="number" id="static-height" value="10" step="0.5" class="mt-1 block w-full border border-slate-300 rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <p class="text-xs text-slate-500 mt-1">Vertical lift from booster to highest outlet.</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Residual Pressure ($bar$)</label>
+                            <input type="number" id="residual-bar" value="2.0" step="0.1" class="mt-1 block w-full border border-slate-300 rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <p class="text-xs text-slate-500 mt-1">Pressure required at the furthest fixture.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <button onclick="calculateResistance()">Calculate Total Head</button>
+            <!-- Results Section -->
+            <div class="space-y-6">
+                <div class="card p-6 sticky top-8 border-t-4 border-blue-600">
+                    <h2 class="text-xl font-semibold mb-6">Total Calculation</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                            <span class="text-slate-600">Friction Head Loss:</span>
+                            <span class="font-mono font-bold" id="res-friction">0.00 mH₂O</span>
+                        </div>
+                        <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                            <span class="text-slate-600">Static Head:</span>
+                            <span class="font-mono font-bold" id="res-static">0.00 mH₂O</span>
+                        </div>
+                        <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                            <span class="text-slate-600">Target Residual:</span>
+                            <span class="font-mono font-bold" id="res-residual">0.00 mH₂O</span>
+                        </div>
+                        <div class="pt-4 flex justify-between items-center text-lg">
+                            <span class="font-bold text-slate-900">Total Req. Head:</span>
+                            <span class="font-mono font-extrabold text-blue-700" id="res-total-head">0.00 mH₂O</span>
+                        </div>
+                        <div class="flex justify-between items-center text-2xl bg-blue-50 p-4 rounded-xl">
+                            <span class="font-bold text-blue-900">Duty Point:</span>
+                            <span class="font-mono font-black text-blue-900" id="res-total-bar">0.00 bar</span>
+                        </div>
+                    </div>
 
-    <div class="result-box" id="results" style="margin-top:20px; display:none;">
-        <p>Friction Loss: <span id="friction">0</span> mH₂O</p>
-        <p>Total Dynamic Head (TDH): <span id="tdh">0</span> mH₂O</p>
-        <p>Pressure Required: <span id="bar">0</span> bar</p>
+                    <div id="warnings" class="mt-6 space-y-2">
+                        <!-- Velocity warnings appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        function calculateResistance() {
-            const Q = parseFloat(document.getElementById('flow').value) / 1000; // m³/s
-            const d = parseFloat(document.getElementById('diameter').value) / 1000; // m
-            const L_pipe = parseFloat(document.getElementById('length').value);
-            const bends = parseInt(document.getElementById('bends').value);
-            const outlets = parseInt(document.getElementById('outlets').value);
-            const staticHead = parseFloat(document.getElementById('static').value);
-            
-            // Equivalent lengths (approximate for 50mm pipe)
-            // Bend ~ 1.5m, Outlet/Valve ~ 3.0m
-            const L_equiv = L_pipe + (bends * 1.5) + (outlets * 3.0);
-            
-            // Hazen-Williams (Metric)
-            // h = 10.67 * L * (Q^1.852) / (C^1.852 * d^4.87)
-            const C = 140;
-            const frictionLoss = (10.67 * L_equiv * Math.pow(Q, 1.852)) / (Math.pow(C, 1.852) * Math.pow(d, 4.87));
-            
-            const totalHead = frictionLoss + staticHead;
-            const bar = totalHead / 10.197; // 1 bar ≈ 10.197 mH2O
+        let sectionCount = 0;
 
-            document.getElementById('friction').innerText = frictionLoss.toFixed(2);
-            document.getElementById('tdh').innerText = totalHead.toFixed(2);
-            document.getElementById('bar').innerText = bar.toFixed(2);
-            document.getElementById('results').style.display = 'block';
+        function addSection() {
+            sectionCount++;
+            const tbody = document.getElementById('sections-body');
+            const row = document.createElement('tr');
+            row.id = `section-${sectionCount}`;
+            row.className = "border-b border-slate-100 hover:bg-slate-50 transition";
+            
+            row.innerHTML = `
+                <td class="px-3 py-4">
+                    <input type="text" placeholder="e.g. Main Header" class="w-full bg-transparent focus:outline-none border-b border-transparent focus:border-blue-500">
+                </td>
+                <td class="px-3 py-4">
+                    <input type="number" step="0.01" value="1.5" oninput="calculate()" class="w-full p-1 border rounded section-flow">
+                </td>
+                <td class="px-3 py-4">
+                    <input type="number" value="32" oninput="calculate()" class="w-full p-1 border rounded section-dia">
+                </td>
+                <td class="px-3 py-4">
+                    <input type="number" value="10" oninput="calculate()" class="w-full p-1 border rounded section-len">
+                </td>
+                <td class="px-3 py-4">
+                    <input type="number" value="4" oninput="calculate()" class="w-full p-1 border rounded section-bends">
+                </td>
+                <td class="px-3 py-4 text-right">
+                    <button onclick="removeSection(${sectionCount})" class="text-red-400 hover:text-red-600 text-xl font-bold">&times;</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+            calculate();
         }
+
+        function removeSection(id) {
+            const row = document.getElementById(`section-${id}`);
+            row.remove();
+            calculate();
+        }
+
+        function calculate() {
+            const C = 140; // Hazen-Williams constant for Copper/Plastic
+            let totalFrictionLoss = 0;
+            let warningsHtml = '';
+
+            const rows = document.querySelectorAll('#sections-body tr');
+            
+            rows.forEach((row, index) => {
+                const Q_ls = parseFloat(row.querySelector('.section-flow').value) || 0;
+                const d_mm = parseFloat(row.querySelector('.section-dia').value) || 1;
+                const L_m = parseFloat(row.querySelector('.section-len').value) || 0;
+                const bends = parseFloat(row.querySelector('.section-bends').value) || 0;
+
+                // 1. Velocity Check (V = Q/A)
+                const Q_m3s = Q_ls / 1000;
+                const d_m = d_mm / 1000;
+                const area = Math.PI * Math.pow(d_m / 2, 2);
+                const velocity = Q_m3s / area;
+
+                if (velocity > 2.0) {
+                    warningsHtml += `<div class="text-xs bg-orange-100 text-orange-800 p-2 rounded">⚠️ Section ${index+1}: Velocity is high (${velocity.toFixed(2)} m/s)</div>`;
+                } else if (velocity < 0.5 && Q_ls > 0) {
+                    warningsHtml += `<div class="text-xs bg-blue-100 text-blue-800 p-2 rounded">ℹ️ Section ${index+1}: Low velocity (${velocity.toFixed(2)} m/s)</div>`;
+                }
+
+                // 2. Equivalent Length (Approx: Elbow = 30 * Pipe Diameters)
+                // Using a simplified 1.5m equivalent per bend for common sizes as a baseline
+                const L_eq = L_m + (bends * (30 * d_m));
+
+                // 3. Hazen-Williams Formula
+                // h_f = 10.67 * L * Q^1.852 / (C^1.852 * d^4.87)
+                if (Q_m3s > 0) {
+                    const h_f = (10.67 * L_eq * Math.pow(Q_m3s, 1.852)) / (Math.pow(C, 1.852) * Math.pow(d_m, 4.87));
+                    totalFrictionLoss += h_f;
+                }
+            });
+
+            const staticHead = parseFloat(document.getElementById('static-height').value) || 0;
+            const residualBar = parseFloat(document.getElementById('residual-bar').value) || 0;
+            const residualHead = residualBar * 10.197; // 1 bar = 10.197 mH2O
+
+            const totalHead = totalFrictionLoss + staticHead + residualHead;
+            const totalBar = totalHead / 10.197;
+
+            // Update UI
+            document.getElementById('res-friction').innerText = `${totalFrictionLoss.toFixed(2)} mH₂O`;
+            document.getElementById('res-static').innerText = `${staticHead.toFixed(2)} mH₂O`;
+            document.getElementById('res-residual').innerText = `${residualHead.toFixed(2)} mH₂O`;
+            document.getElementById('res-total-head').innerText = `${totalHead.toFixed(2)} mH₂O`;
+            document.getElementById('res-total-bar').innerText = `${totalBar.toFixed(2)} bar`;
+            document.getElementById('warnings').innerHTML = warningsHtml;
+        }
+
+        // Initialize with one section
+        window.onload = addSection;
     </script>
 </body>
 </html>
