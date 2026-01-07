@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booster LU Analysis | PMCE Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f1f5f9; color: #0f172a; font-family: 'Inter', sans-serif; }
+        .input-std { @apply mt-1 block w-full border border-slate-300 rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        <header class="mb-10">
+            <h1 class="text-4xl font-black text-slate-900">Booster <span class="text-blue-600">LU Analysis</span></h1>
+            <p class="text-slate-500">BS EN 806-3 Diversity & Loading Unit Calculation</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-xl border shadow-sm">
+                <h2 class="font-bold mb-4">Input Parameters</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs font-bold uppercase text-slate-400">Total Loading Units (LU)</label>
+                        <input type="number" id="total-lu" value="100" oninput="calculateLU()" class="input-std text-lg font-mono">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold uppercase text-slate-400">Static Height (m)</label>
+                        <input type="number" id="static-h" value="12" oninput="calculateLU()" class="input-std text-lg font-mono">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold uppercase text-slate-400">Residual Pressure (bar)</label>
+                        <input type="number" id="residual-p" value="2.0" step="0.1" oninput="calculateLU()" class="input-std text-lg font-mono">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-blue-600 p-8 rounded-xl text-white shadow-lg flex flex-col justify-center">
+                <div class="text-xs font-bold uppercase opacity-80 mb-2 text-nowrap">Calculated Design Flow</div>
+                <div class="text-5xl font-black font-mono mb-4" id="res-flow">0.00 L/s</div>
+                <div class="pt-4 border-t border-blue-400">
+                    <div class="flex justify-between text-sm opacity-90"><span>Total Head:</span><span id="res-head">0.00 bar</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function calculateLU() {
+            const lu = parseFloat(document.getElementById('total-lu').value) || 0;
+            const flow = 0.2 * Math.sqrt(lu);
+            const sh = parseFloat(document.getElementById('static-h').value) || 0;
+            const rp = parseFloat(document.getElementById('residual-p').value) || 0;
+            
+            // Simplified friction estimate (10% of static + residual) for quick analysis
+            const totalBar = (sh / 10.197) + rp + 0.5;
+
+            document.getElementById('res-flow').innerText = flow.toFixed(2) + " L/s";
+            document.getElementById('res-head').innerText = totalBar.toFixed(2) + " bar";
+        }
+        window.onload = calculateLU;
+    </script>
+</body>
+</html>
