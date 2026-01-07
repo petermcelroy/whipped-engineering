@@ -3,118 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Engineering Hub | PMCE Services</title>
+    <title>DuctoC | PMCE Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #f1f5f9; color: #0f172a; font-family: 'Inter', sans-serif; }
-        .tool-card { 
-            background: white; 
-            border-radius: 12px; 
-            transition: all 0.3s ease;
-            border: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-        .tool-card:hover { 
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-            border-color: #3b82f6;
-        }
-        .section-tag {
-            @apply inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4;
-        }
+        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .input-std { @apply mt-1 block w-full border border-slate-300 rounded-md p-3 shadow-sm focus:ring-cyan-500 focus:border-cyan-500 font-mono; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        @media print { .no-print { display: none; } }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
-    <div class="max-w-7xl mx-auto px-6 py-12 flex-grow w-full">
-        <header class="mb-16 border-b border-slate-200 pb-8 text-center md:text-left">
-            <h1 class="text-5xl font-black text-slate-900 tracking-tight">PMCE <span class="text-blue-600">SERVICES</span></h1>
-            <p class="text-slate-500 mt-2 font-medium text-lg">Professional Engineering Tools & Hydraulic Analysis Hub</p>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <h1 class="text-4xl font-black text-slate-900 tracking-tight">Ducto<span class="text-cyan-600">C</span></h1>
+                <p class="text-slate-500 font-medium">Circular Duct Friction & Velocity Analysis (Colebrook-White)</p>
+            </div>
+            <div class="flex gap-2 no-print">
+                <button onclick="exportHistory()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Export History (.csv)
+                </button>
+            </div>
         </header>
 
-        <!-- HYDRAULICS & NETWORKS SECTION -->
-        <div class="mb-12">
-            <h2 class="text-xl font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-                <span class="w-8 h-px bg-slate-300"></span>
-                Hydraulics & Networks
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Tool 1: Booster Resistance Calculator -->
-                <a href="booster_calc.html" class="tool-card p-8 group">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="p-3 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- INPUTS -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-xl border">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path></svg>
+                        Design Parameters
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400">Airflow ($m^3/s$)</label>
+                            <input type="number" id="airflow" value="0.50" step="0.01" oninput="calcDuct()" class="input-std">
                         </div>
-                        <span class="text-xs font-bold text-slate-400">BS EN 806-3</span>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400">Diameter ($\varnothing$ $mm$)</label>
+                            <input type="number" id="diameter" value="315" oninput="calcDuct()" class="input-std">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400">Length ($m$)</label>
+                            <input type="number" id="length" value="10" oninput="calcDuct()" class="input-std">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400">Number of Bends (90&deg;)</label>
+                            <input type="number" id="bends" value="0" oninput="calcDuct()" class="input-std">
+                        </div>
+                        <button onclick="logResult()" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 rounded-lg transition mt-4 no-print">
+                            Add to History
+                        </button>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-900 mb-2">Booster Resistance</h2>
-                    <p class="text-slate-600 mb-6 text-sm leading-relaxed flex-grow">
-                        Advanced Loading Unit (LU) analysis for residential developments. Calculates friction losses and system duty points.
-                    </p>
-                    <div class="flex items-center text-blue-600 font-bold text-sm">Launch Tool &rarr;</div>
-                </a>
+                </div>
 
-                <!-- Tool 2: DHN Optimiser -->
-                <a href="dhn_optimiser.html" class="tool-card p-8 group border-blue-100 bg-blue-50/30">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="p-3 bg-orange-100 text-orange-600 rounded-lg group-hover:bg-orange-600 group-hover:text-white transition-colors">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <div class="bg-cyan-900 text-white p-8 rounded-2xl shadow-lg">
+                    <div class="space-y-6">
+                        <div>
+                            <div class="text-xs font-bold uppercase opacity-60">Velocity</div>
+                            <div class="text-4xl font-black font-mono" id="velocity">0.00 m/s</div>
                         </div>
-                        <span class="text-xs font-bold text-slate-400">CP1 (2020)</span>
+                        <div>
+                            <div class="text-xs font-bold uppercase opacity-60">Total Pressure Drop</div>
+                            <div class="text-4xl font-black font-mono" id="total-pa">0.00 Pa</div>
+                            <div class="text-xs opacity-60 mt-1" id="friction-rate">0.00 Pa/m</div>
+                        </div>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-900 mb-2">DHN Optimiser</h2>
-                    <p class="text-slate-600 mb-6 text-sm leading-relaxed flex-grow">
-                        District Heating Network optimiser. Focuses on $\Delta T$ maximisation and heat loss reduction for HIU systems.
-                    </p>
-                    <div class="flex items-center text-orange-600 font-bold text-sm">Launch Tool &rarr;</div>
-                </a>
+                </div>
+            </div>
 
-                <!-- Tool 3: Advanced Branch Analysis lower case-->
-    
-                <a href="booster_analysis.html" class="tool-card p-8 group">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="p-3 bg-slate-100 text-slate-600 rounded-lg group-hover:bg-slate-800 group-hover:text-white transition-colors">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        </div>
-                        <span class="text-xs font-bold text-slate-400">CIBSE Guide G</span>
+            <!-- HISTORY TABLE -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-xl border overflow-hidden">
+                    <div class="p-6 border-b flex justify-between items-center">
+                        <h2 class="text-xl font-bold">Calculation History</h2>
+                        <span class="text-xs font-bold text-slate-400 uppercase" id="history-count">0 / 20 Entries</span>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-900 mb-2">Branch Analysis</h2>
-                    <p class="text-slate-600 mb-6 text-sm leading-relaxed flex-grow">
-                        Detailed secondary branch modeling and diversity calculations for complex risers.
-                    </p>
-                    <div class="flex items-center text-slate-900 font-bold text-sm">Launch Tool &rarr;</div>
-                </a>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 text-slate-500 uppercase text-xs font-bold">
+                                <tr>
+                                    <th class="px-4 py-3">Airflow</th>
+                                    <th class="px-4 py-3">$\varnothing$</th>
+                                    <th class="px-4 py-3">Len</th>
+                                    <th class="px-4 py-3">Bends</th>
+                                    <th class="px-4 py-3">Vel</th>
+                                    <th class="px-4 py-3">$\Delta P$</th>
+                                    <th class="px-4 py-3 text-right"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-body" class="divide-y divide-slate-100">
+                                <!-- Entries here -->
+                            </tbody>
+                        </table>
+                        <div id="empty-state" class="p-12 text-center text-slate-400">
+                            No historical entries yet. Adjust parameters and click "Add to History".
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <!-- BUILDING PHYSICS SECTION -->
-        <div class="mb-12">
-            <h2 class="text-xl font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-                <span class="w-8 h-px bg-slate-300"></span>
-                Building Physics & Thermal
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Tool 4: U-Value Calculator -->
-                <a href="u_value_calc.html" class="tool-card p-8 group">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="p-3 bg-green-50 text-green-600 rounded-lg group-hover:bg-green-600 group-hover:text-white transition-colors">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                        </div>
-                        <span class="text-xs font-bold text-slate-400">BR 443 / ISO 6946</span>
-                    </div>
-                    <h2 class="text-2xl font-bold text-slate-900 mb-2">U-Value Calculator</h2>
-                    <p class="text-slate-600 mb-6 text-sm leading-relaxed flex-grow">
-                        Thermal transmittance analysis ($W/m^2K$) for multi-layered elements including thermal bridging and air gap corrections.
-                    </p>
-                    <div class="flex items-center text-green-600 font-bold text-sm">Launch Tool &rarr;</div>
-                </a>
-            </div>
-        </div>
-
-        <footer class="mt-20 pt-8 border-t border-slate-200 text-center text-slate-400 text-sm">
-            <p>&copy; 2024 PMCE Services. All hydraulic calculations utilize $Q = 0.2 \sqrt{\sum LU}$. Thermal analysis adheres to BR 443.</p>
-        </footer>
     </div>
+
+    <script>
+        let history = [];
+        const MAX_HISTORY = 20;
+
+        function calcDuct() {
+            const q = parseFloat(document.getElementById('airflow').value) || 0;
+            const d_mm = parseFloat(document.getElementById('diameter').value) || 1;
+            const l_m = parseFloat(document.getElementById('length').value) || 0;
+            const bends = parseFloat(document.getElementById('bends').value) || 0;
+            
+            const d_m = d_mm / 1000;
+            const area = Math.PI * Math.pow(d_m / 2, 2);
+            const v = q / area;
+            
+            // Colebrook-White friction factor (approx for galvanized steel air duct)
+            const k = 0.00015; // Roughness (m)
+            const rho = 1.204; // Air density
+            const mu = 0.000018; // Dynamic viscosity
+            
+            // Reynold's Number
+            const re = (rho * v * d_m) / mu;
+            
+            let f = 0.02; // Initial guess
+            if (re > 2300) {
+                // Iterative friction factor (simple 1-step Haaland approx)
+                f = 1 / Math.pow(-1.8 * Math.log10(Math.pow(k / (3.7 * d_m), 1.11) + 6.9 / re), 2);
+            }
+
+            // Equivalent length for bends (30 x Diameter per bend)
+            const l_eq = l_m + (bends * (30 * d_m));
+            
+            const friction_rate = (f / d_m) * (rho * Math.pow(v, 2) / 2);
+            const total_pa = friction_rate * l_eq;
+
+            document.getElementById('velocity').innerText = v.toFixed(2) + " m/s";
+            document.getElementById('total-pa').innerText = total_pa.toFixed(2) + " Pa";
+            document.getElementById('friction-rate').innerText = friction_rate.toFixed(3) + " Pa/m (Inc. Bends)";
+
+            return { q, d_mm, l_m, bends, v, total_pa };
+        }
+
+        function logResult() {
+            const result = calcDuct();
+            if (result.q === 0) return;
+
+            if (history.length >= MAX_HISTORY) {
+                history.shift(); // Remove oldest
+            }
+
+            history.push({
+                id: Date.now(),
+                ...result
+            });
+
+            updateHistoryUI();
+        }
+
+        function removeEntry(id) {
+            history = history.filter(entry => entry.id !== id);
+            updateHistoryUI();
+        }
+
+        function updateHistoryUI() {
+            const body = document.getElementById('history-body');
+            const empty = document.getElementById('empty-state');
+            const count = document.getElementById('history-count');
+            
+            body.innerHTML = '';
+            count.innerText = `${history.length} / ${MAX_HISTORY} Entries`;
+
+            if (history.length === 0) {
+                empty.classList.remove('hidden');
+            } else {
+                empty.classList.add('hidden');
+                // Reverse to show newest at top
+                [...history].reverse().forEach(entry => {
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-slate-50 transition-colors";
+                    row.innerHTML = `
+                        <td class="px-4 py-3 font-mono">${entry.q.toFixed(2)}</td>
+                        <td class="px-4 py-3 font-mono">${entry.d_mm}</td>
+                        <td class="px-4 py-3 font-mono">${entry.l_m}</td>
+                        <td class="px-4 py-3 font-mono">${entry.bends}</td>
+                        <td class="px-4 py-3 font-mono font-bold text-cyan-700">${entry.v.toFixed(2)}</td>
+                        <td class="px-4 py-3 font-mono font-bold text-slate-900">${entry.total_pa.toFixed(1)}</td>
+                        <td class="px-4 py-3 text-right">
+                            <button onclick="removeEntry(${entry.id})" class="text-slate-300 hover:text-red-500 transition-colors">&times;</button>
+                        </td>
+                    `;
+                    body.appendChild(row);
+                });
+            }
+        }
+
+        function exportHistory() {
+            if (history.length === 0) return;
+
+            let csv = "PMCE SERVICES - DUCTOC CALCULATION REPORT\n";
+            csv += "Generated: " + new Date().toLocaleString() + "\n\n";
+            csv += "Airflow (m3/s),Diameter (mm),Length (m),Bends,Velocity (m/s),Pressure Drop (Pa)\n";
+            
+            history.forEach(e => {
+                csv += `${e.q},${e.d_mm},${e.l_m},${e.bends},${e.v.toFixed(3)},${e.total_pa.toFixed(2)}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'DuctoC_Calculation_History.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        window.onload = calcDuct;
+    </script>
 </body>
 </html>
