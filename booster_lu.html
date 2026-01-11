@@ -3,42 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>booster_lu | Engineering Analysis</title>
+    <title>booster_lu | Professional Hydraulic Analysis</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #f8fafc; color: #0f172a; font-family: ui-sans-serif, system-ui; }
         .card { background: white; border: 1px solid #e2e8f0; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .input-box { border: 1px solid #cbd5e1; border-radius: 2px; padding: 2px 6px; font-size: 0.875rem; }
-        th { background-color: #f1f5f9; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; padding: 8px; border: 1px solid #e2e8f0; }
-        td { border: 1px solid #e2e8f0; padding: 4px 8px; }
-        .zone-header { writing-mode: vertical-lr; transform: rotate(180deg); text-align: center; min-height: 100px; }
+        th { background-color: #f1f5f9; font-weight: 600; font-size: 10px; text-transform: uppercase; padding: 8px; border: 1px solid #e2e8f0; min-width: 60px; }
+        td { border: 1px solid #e2e8f0; padding: 0; }
+        input { width: 100%; height: 100%; padding: 8px 4px; outline: none; background: transparent; text-align: center; font-size: 11px; }
+        input:focus { background-color: #f0f9ff; box-shadow: inset 0 0 0 1px #3b82f6; }
+        .desc-cell { text-align: left !important; padding-left: 8px !important; min-width: 200px; }
     </style>
 </head>
 <body class="p-6">
-    <div class="max-w-[1600px] mx-auto">
+    <div class="max-w-[1800px] mx-auto">
         <header class="mb-6 flex justify-between items-end border-b-2 border-slate-800 pb-2">
             <div>
                 <h1 class="text-2xl font-bold uppercase tracking-tight text-slate-900">booster_lu</h1>
-                <p class="text-[10px] font-mono text-slate-500">Professional Grade | Colebrook-White Analysis | CIBSE Compliance Mode</p>
+                <p class="text-[10px] font-mono text-slate-500 italic">Faithful CIBSE-aligned Analysis | Colebrook-White Solver</p>
             </div>
         </header>
 
         <div class="grid grid-cols-12 gap-6">
             <div class="col-span-12 lg:col-span-3 space-y-6">
                 <div class="card p-4">
-                    <h2 class="text-xs font-bold mb-3 border-b pb-1 text-blue-800">1. MASTER LU LIBRARY</h2>
-                    <div id="lu-library-container" class="space-y-2 max-h-[300px] overflow-y-auto pr-2">
-                        </div>
-                    <button onclick="addLibraryItem()" class="mt-4 w-full text-[10px] bg-slate-100 hover:bg-slate-200 py-2 rounded font-bold uppercase">+ Add Custom Appliance</button>
+                    <h2 class="text-xs font-bold mb-3 border-b pb-1 text-blue-800 uppercase">1. Master LU Library</h2>
+                    <div id="lu-library-container" class="space-y-1"></div>
+                    <button onclick="addLibraryItem()" class="mt-4 w-full text-[10px] bg-slate-800 text-white py-2 rounded font-bold uppercase hover:bg-slate-700">+ Add Custom Appliance</button>
                 </div>
 
                 <div class="card p-4">
                     <div class="flex justify-between items-center mb-3 border-b pb-1">
-                        <h2 class="text-xs font-bold text-blue-800">2. ZONE DEFINITIONS</h2>
-                        <button onclick="addNewZone()" class="text-[10px] bg-blue-600 text-white px-2 py-1 rounded font-bold">NEW ZONE</button>
+                        <h2 class="text-xs font-bold text-blue-800 uppercase">2. Zone Definitions</h2>
+                        <button onclick="addNewZone()" class="text-[10px] bg-blue-600 text-white px-2 py-1 rounded font-bold">ADD ZONE</button>
                     </div>
-                    <div id="zones-container" class="space-y-4">
-                        </div>
+                    <div id="zones-container" class="space-y-4"></div>
                 </div>
             </div>
 
@@ -46,54 +46,50 @@
                 <div class="card p-4 grid grid-cols-4 gap-4 bg-slate-50 border-slate-300">
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase">Roughness ($k_s$ mm)</label>
-                        <input type="number" id="ks" value="0.015" step="0.001" oninput="calculate()" class="input-box w-full">
+                        <input type="number" id="ks" value="0.015" step="0.001" oninput="calculate()" class="input-box bg-white">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase">Static Head ($m$)</label>
-                        <input type="number" id="static" value="15" oninput="calculate()" class="input-box w-full">
+                        <input type="number" id="static" value="15" oninput="calculate()" class="input-box bg-white">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase">Residual Bar</label>
-                        <input type="number" id="resid" value="2.0" step="0.1" oninput="calculate()" class="input-box w-full">
+                        <input type="number" id="resid" value="2.0" step="0.1" oninput="calculate()" class="input-box bg-white">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase">Viscosity ($\nu$)</label>
-                        <input type="number" id="visc" value="0.00000131" step="0.00000001" oninput="calculate()" class="input-box w-full">
+                        <input type="number" id="visc" value="0.00000131" step="0.00000001" oninput="calculate()" class="input-box bg-white">
                     </div>
                 </div>
 
-                <div class="card p-4 overflow-x-auto min-h-[400px]">
-                    <div class="flex justify-between items-center mb-4">
+                <div class="card overflow-x-auto">
+                    <div class="p-4 border-b flex justify-between items-center bg-white">
                         <h2 class="text-xs font-bold uppercase tracking-widest">3. Pipe Section Analysis</h2>
-                        <button onclick="addSection()" class="bg-slate-900 text-white px-4 py-1 text-xs rounded hover:bg-slate-800 font-bold tracking-tighter">+ ADD PIPE SECTION</button>
+                        <button onclick="addSection()" class="bg-blue-700 text-white px-6 py-1 text-xs rounded hover:bg-blue-800 font-bold">+ ADD PIPE SECTION</button>
                     </div>
                     <table class="w-full text-[11px] border-collapse">
-                        <thead>
-                            <tr id="table-head-row">
-                                </tr>
-                        </thead>
-                        <tbody id="sections-body">
-                            </tbody>
+                        <thead id="table-head"></thead>
+                        <tbody id="sections-body"></tbody>
                     </table>
                 </div>
 
                 <div class="grid grid-cols-4 gap-4">
-                    <div class="card p-4 border-l-4 border-slate-300">
-                        <div class="text-[10px] font-bold text-slate-400 uppercase">System Friction Loss</div>
-                        <div id="out-friction" class="text-xl font-mono font-bold">0.00 m</div>
+                    <div class="card p-4 border-l-4 border-blue-500">
+                        <div class="text-[10px] font-bold text-slate-400 uppercase">Friction Head Loss</div>
+                        <div id="out-friction" class="text-xl font-mono font-bold text-slate-800">0.00 m</div>
                     </div>
-                    <div class="card p-4 border-l-4 border-slate-300">
-                        <div class="text-[10px] font-bold text-slate-400 uppercase">Total Head (mH2O)</div>
-                        <div id="out-head" class="text-xl font-mono font-bold">0.00 m</div>
+                    <div class="card p-4 border-l-4 border-blue-500">
+                        <div class="text-[10px] font-bold text-slate-400 uppercase">Total Head Required</div>
+                        <div id="out-head" class="text-xl font-mono font-bold text-slate-800">0.00 m</div>
                     </div>
                     <div class="card p-4 bg-slate-900 text-white col-span-2 flex justify-between items-center px-8">
                         <div>
-                            <div class="text-[10px] font-bold text-slate-400 uppercase">Duty Point</div>
+                            <div class="text-[10px] font-bold text-slate-400 uppercase">Booster Duty</div>
                             <div id="out-bar" class="text-3xl font-mono font-bold text-blue-400">0.00 bar</div>
                         </div>
                         <div class="text-right">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase">Peak Flow</div>
-                            <div id="out-total-flow" class="text-xl font-mono font-bold">0.00 L/s</div>
+                            <div class="text-[10px] font-bold text-slate-400 uppercase">Design Flow</div>
+                            <div id="out-total-flow" class="text-xl font-mono font-bold text-white">0.00 L/s</div>
                         </div>
                     </div>
                 </div>
@@ -103,43 +99,37 @@
     </div>
 
     <script>
-        // --- State Management ---
         let luLibrary = [
-            { id: 1, name: 'WC (Flushing Valve)', lu: 1.5 },
-            { id: 2, name: 'WC (Cistern)', lu: 0.5 },
-            { id: 3, name: 'Wash Basin', lu: 0.2 },
-            { id: 4, name: 'Shower', lu: 0.4 },
-            { id: 5, name: 'Kitchen Sink', lu: 0.6 },
-            { id: 6, name: 'Bath Tap', lu: 0.8 },
-            { id: 7, name: 'Washing Machine', lu: 0.5 }
+            { id: 1, name: 'WC (Cistern)', lu: 0.5 },
+            { id: 2, name: 'Wash Basin', lu: 0.2 },
+            { id: 3, name: 'Shower', lu: 0.4 },
+            { id: 4, name: 'Kitchen Sink', lu: 0.6 }
         ];
 
         let zones = [];
         let sections = [];
 
-        // --- Library Logic ---
         function renderLibrary() {
             const container = document.getElementById('lu-library-container');
             container.innerHTML = luLibrary.map(item => `
-                <div class="flex items-center gap-2 group">
-                    <input type="text" value="${item.name}" oninput="updateLib(${item.id}, 'name', this.value)" class="text-[11px] w-full border-b border-transparent hover:border-slate-300 focus:border-blue-500 bg-transparent outline-none">
-                    <input type="number" value="${item.lu}" step="0.1" oninput="updateLib(${item.id}, 'lu', this.value)" class="text-[11px] w-12 border rounded text-center bg-slate-50">
-                    <button onclick="removeLibItem(${item.id})" class="text-red-300 hover:text-red-600 px-1">×</button>
+                <div class="flex items-center gap-1">
+                    <input type="text" value="${item.name}" oninput="updateLib(${item.id}, 'name', this.value)" class="text-left border-none p-1 hover:bg-slate-50">
+                    <input type="number" value="${item.lu}" step="0.1" oninput="updateLib(${item.id}, 'lu', this.value)" class="w-12 border rounded text-center bg-slate-50 p-1">
+                    <button onclick="removeLibItem(${item.id})" class="text-red-300 px-1">×</button>
                 </div>
             `).join('');
             renderZones();
+            refreshTable();
         }
 
         function updateLib(id, key, val) {
             const item = luLibrary.find(i => i.id === id);
             item[key] = key === 'lu' ? parseFloat(val) || 0 : val;
-            // Debounced update to allow typing
-            clearTimeout(window.libTimeout);
-            window.libTimeout = setTimeout(() => { renderZones(); calculate(); }, 500);
+            setTimeout(() => { renderZones(); calculate(); }, 100);
         }
 
         function addLibraryItem() {
-            luLibrary.push({ id: Date.now(), name: 'New Appliance', lu: 1.0 });
+            luLibrary.push({ id: Date.now(), name: 'New Item', lu: 1.0 });
             renderLibrary();
         }
 
@@ -148,26 +138,22 @@
             renderLibrary();
         }
 
-        // --- Zone Logic ---
         function addNewZone() {
             zones.push({ id: Date.now(), name: 'Zone ' + (zones.length + 1), items: {} });
             renderZones();
-            refreshTableStructure();
+            refreshTable();
         }
 
         function renderZones() {
             const container = document.getElementById('zones-container');
             container.innerHTML = zones.map(zone => `
-                <div class="bg-slate-50 p-3 rounded border border-slate-200">
-                    <div class="flex justify-between items-center mb-2">
-                        <input type="text" value="${zone.name}" oninput="updateZoneName(${zone.id}, this.value)" class="font-bold text-xs w-full bg-transparent border-b border-slate-300 outline-none focus:border-blue-500">
-                        <button onclick="removeZone(${zone.id})" class="text-red-400 text-xs ml-2">Del</button>
-                    </div>
+                <div class="bg-slate-50 p-2 rounded border border-slate-200">
+                    <input type="text" value="${zone.name}" oninput="updateZoneName(${zone.id}, this.value)" class="font-bold text-[11px] mb-2 bg-transparent border-b outline-none w-full text-left">
                     <div class="space-y-1">
                         ${luLibrary.map(lib => `
-                            <div class="flex justify-between items-center text-[10px] text-slate-600">
-                                <span class="truncate pr-2">${lib.name}</span>
-                                <input type="number" min="0" value="${zone.items[lib.id] || 0}" oninput="updateZoneItem(${zone.id}, ${lib.id}, this.value)" class="w-10 border rounded px-1 text-center bg-white">
+                            <div class="flex justify-between text-[10px]">
+                                <span class="truncate">${lib.name}</span>
+                                <input type="number" value="${zone.items[lib.id] || 0}" oninput="updateZoneItem(${zone.id}, ${lib.id}, this.value)" class="w-8 border rounded text-center bg-white">
                             </div>
                         `).join('')}
                     </div>
@@ -177,7 +163,7 @@
 
         function updateZoneName(id, val) {
             zones.find(z => z.id === id).name = val;
-            refreshTableStructure();
+            refreshTable();
         }
 
         function updateZoneItem(zId, lId, val) {
@@ -185,59 +171,54 @@
             calculate();
         }
 
-        function removeZone(id) {
-            zones = zones.filter(z => z.id !== id);
-            refreshTableStructure();
-        }
-
-        // --- Table & Calculation Logic ---
-        function refreshTableStructure() {
-            renderTableHeaders();
+        function refreshTable() {
+            const head = document.getElementById('table-head');
+            let zoneHeaders = zones.map(z => `<th class="bg-blue-50 text-blue-800">${z.name}</th>`).join('');
+            let appHeaders = luLibrary.map(l => `<th class="bg-slate-50 text-slate-600">${l.name}</th>`).join('');
+            
+            head.innerHTML = `
+                <tr>
+                    <th rowspan="2" class="desc-cell">Section Description</th>
+                    <th colspan="${zones.length}" class="bg-blue-100">Zones (Grouped LUs)</th>
+                    <th colspan="${luLibrary.length}" class="bg-slate-100">Direct Appliances (LUs)</th>
+                    <th rowspan="2">$\sum$ LU</th>
+                    <th rowspan="2">Flow ($L/s$)</th>
+                    <th rowspan="2">ID ($mm$)</th>
+                    <th rowspan="2">Len ($m$)</th>
+                    <th rowspan="2">Bends</th>
+                    <th rowspan="2"></th>
+                </tr>
+                <tr>${zoneHeaders}${appHeaders}</tr>
+            `;
             renderSections();
         }
 
-        function renderTableHeaders() {
-            const head = document.getElementById('table-head-row');
-            const zoneHtml = zones.map(z => `<th class="w-16 bg-blue-50 border-x border-slate-200">${z.name}</th>`).join('');
-            head.innerHTML = `
-                <th class="text-left px-2">Description</th>
-                ${zoneHtml}
-                <th class="w-20">Total LU</th>
-                <th class="w-20">Flow ($L/s$)</th>
-                <th class="w-20">ID ($mm$)</th>
-                <th class="w-20">Len ($m$)</th>
-                <th class="w-16">Bends</th>
-                <th class="w-8"></th>
-            `;
-        }
-
         function addSection() {
-            sections.push({ id: Date.now(), desc: 'Pipe Section ' + (sections.length + 1), counts: {}, dia: 32, len: 10, bends: 4 });
+            sections.push({ id: Date.now(), desc: 'New Section', zoneCounts: {}, appCounts: {}, dia: 32, len: 10, bends: 4 });
             renderSections();
         }
 
         function renderSections() {
             const body = document.getElementById('sections-body');
             body.innerHTML = sections.map(s => `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="p-0"><input type="text" value="${s.desc}" oninput="updateSec(${s.id}, 'desc', this.value)" class="w-full px-2 py-2 bg-transparent outline-none focus:bg-white"></td>
-                    ${zones.map(z => `
-                        <td class="p-0 border-x border-slate-100"><input type="number" value="${s.counts[z.id] || 0}" oninput="updateSec(${s.id}, 'counts', this.value, ${z.id})" class="w-full py-2 text-center bg-transparent outline-none focus:bg-white"></td>
-                    `).join('')}
-                    <td id="lu-${s.id}" class="text-center font-mono font-bold text-slate-600 bg-slate-50">0</td>
-                    <td id="flow-${s.id}" class="text-center font-mono text-blue-700 font-bold bg-slate-50">0.00</td>
-                    <td class="p-0"><input type="number" value="${s.dia}" oninput="updateSec(${s.id}, 'dia', this.value)" class="w-full py-2 text-center outline-none"></td>
-                    <td class="p-0"><input type="number" value="${s.len}" oninput="updateSec(${s.id}, 'len', this.value)" class="w-full py-2 text-center outline-none"></td>
-                    <td class="p-0"><input type="number" value="${s.bends}" oninput="updateSec(${s.id}, 'bends', this.value)" class="w-full py-2 text-center outline-none"></td>
-                    <td class="text-center"><button onclick="delSec(${s.id})" class="text-red-300 hover:text-red-600 font-bold">×</button></td>
+                <tr>
+                    <td class="desc-cell"><input type="text" value="${s.desc}" oninput="updateSec(${s.id}, 'desc', this.value)" class="text-left"></td>
+                    ${zones.map(z => `<td><input type="number" value="${s.zoneCounts[z.id] || 0}" oninput="updateSec(${s.id}, 'zoneCounts', this.value, ${z.id})"></td>`).join('')}
+                    ${luLibrary.map(l => `<td><input type="number" value="${s.appCounts[l.id] || 0}" oninput="updateSec(${s.id}, 'appCounts', this.value, ${l.id})"></td>`).join('')}
+                    <td id="lu-${s.id}" class="font-bold bg-slate-50">0</td>
+                    <td id="flow-${s.id}" class="font-bold text-blue-700 bg-slate-50">0.00</td>
+                    <td><input type="number" value="${s.dia}" oninput="updateSec(${s.id}, 'dia', this.value)"></td>
+                    <td><input type="number" value="${s.len}" oninput="updateSec(${s.id}, 'len', this.value)"></td>
+                    <td><input type="number" value="${s.bends}" oninput="updateSec(${s.id}, 'bends', this.value)"></td>
+                    <td><button onclick="delSec(${s.id})" class="text-red-400 p-2">×</button></td>
                 </tr>
             `).join('');
             calculate();
         }
 
-        function updateSec(id, key, val, zId = null) {
+        function updateSec(id, key, val, subId = null) {
             const s = sections.find(i => i.id === id);
-            if(zId) s.counts[zId] = parseFloat(val) || 0;
+            if (subId) s[key][subId] = parseFloat(val) || 0;
             else s[key] = key === 'desc' ? val : parseFloat(val) || 0;
             calculate();
         }
@@ -247,69 +228,60 @@
             renderSections();
         }
 
-        // --- Core Engineering Calculation ---
         function calculate() {
             const ks = parseFloat(document.getElementById('ks').value) / 1000;
             const nu = parseFloat(document.getElementById('visc').value);
             const g = 9.81;
             let totalHf = 0;
-            let peakFlow = 0;
+            let totalFlow = 0;
             let warnings = "";
 
             sections.forEach(s => {
                 let sLU = 0;
+                // Sum from Zones
                 zones.forEach(z => {
-                    const zoneQty = s.counts[z.id] || 0;
                     let zoneLU = 0;
-                    luLibrary.forEach(lib => {
-                        zoneLU += (z.items[lib.id] || 0) * lib.lu;
-                    });
-                    sLU += zoneQty * zoneLU;
+                    luLibrary.forEach(lib => { zoneLU += (z.items[lib.id] || 0) * lib.lu; });
+                    sLU += (s.zoneCounts[z.id] || 0) * zoneLU;
+                });
+                // Sum from Direct Appliances
+                luLibrary.forEach(l => {
+                    sLU += (s.appCounts[l.id] || 0) * l.lu;
                 });
 
                 document.getElementById(`lu-${s.id}`).innerText = sLU.toFixed(1);
-
-                // Diversity: Standard Loading Unit to Flow (CIBSE/BSEN Basis)
-                const Q_ls = sLU > 0 ? 0.22 * Math.pow(sLU, 0.5) : 0; 
+                const Q_ls = sLU > 0 ? 0.22 * Math.pow(sLU, 0.5) : 0;
                 document.getElementById(`flow-${s.id}`).innerText = Q_ls.toFixed(2);
-                if (Q_ls > peakFlow) peakFlow = Q_ls;
+                if (Q_ls > totalFlow) totalFlow = Q_ls;
 
                 if (Q_ls > 0 && s.dia > 0) {
                     const Q = Q_ls / 1000;
                     const D = s.dia / 1000;
                     const Vel = Q / (Math.PI * Math.pow(D/2, 2));
                     const Re = (Vel * D) / nu;
-                    const Leq = s.len + (s.bends * 30 * D);
+                    const Leq = s.len + (s.bends * 30 * D); // Friction length corrected
 
                     if (Re > 2000) {
-                        let f = 0.02; // Initial guess
-                        for(let i=0; i<8; i++) {
+                        let f = 0.02;
+                        for(let i=0; i<10; i++) {
                             f = 1 / Math.pow(-2 * Math.log10((ks/(3.7*D)) + (2.51/(Re * Math.sqrt(f)))), 2);
                         }
                         const hf = f * (Leq / D) * (Math.pow(Vel, 2) / (2 * g));
                         totalHf += hf;
                     }
-
-                    if (Vel > 2.0) warnings += `<div class='text-[10px] bg-red-100 p-2 border-l-4 border-red-500 text-red-700'>⚠️ ${s.desc}: High Velocity (${Vel.toFixed(2)} m/s) - Noise/Erosion risk.</div>`;
+                    if (Vel > 2.0) warnings += `<div class='text-[10px] bg-red-50 p-1 text-red-600 border border-red-200'>⚠️ ${s.desc}: High Velocity (${Vel.toFixed(2)}m/s)</div>`;
                 }
             });
 
-            const staticH = parseFloat(document.getElementById('static').value) || 0;
-            const residH = (parseFloat(document.getElementById('resid').value) || 0) * 10.197;
-            const totalH = totalHf + staticH + residH;
-
+            const totalH = totalHf + parseFloat(document.getElementById('static').value) + (parseFloat(document.getElementById('resid').value) * 10.197);
             document.getElementById('out-friction').innerText = totalHf.toFixed(2) + " m";
             document.getElementById('out-head').innerText = totalH.toFixed(2) + " m";
             document.getElementById('out-bar').innerText = (totalH / 10.197).toFixed(2) + " bar";
-            document.getElementById('out-total-flow').innerText = peakFlow.toFixed(2) + " L/s";
+            document.getElementById('out-total-flow').innerText = totalFlow.toFixed(2) + " L/s";
             document.getElementById('warnings').innerHTML = warnings;
         }
 
-        window.onload = () => {
-            renderLibrary();
-            addNewZone(); 
-            addSection(); 
-        };
+        window.onload = () => { renderLibrary(); addSection(); };
     </script>
 </body>
 </html>
