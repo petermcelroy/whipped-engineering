@@ -3,329 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Engineering Booster Set Calculator | PMCE Services</title>
+    <title>booster_lu - Colebrook-White & LU Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #f1f5f9; color: #0f172a; font-family: 'Inter', sans-serif; }
-        .card { background: white; border-radius: 12px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; }
-        .input-std { @apply mt-1 block w-full border border-slate-300 rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm; }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        @media print { .no-print { display: none; } }
+        body { background-color: #f1f5f9; color: #1e293b; }
+        .card { background: white; border-radius: 8px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); }
+        .input-field { border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 8px; width: 100%; }
+        th { font-size: 0.75rem; text-transform: uppercase; color: #64748b; padding: 8px; }
     </style>
 </head>
 <body class="p-4 md:p-8">
     <div class="max-w-7xl mx-auto">
-        <header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-                <h1 class="text-4xl font-black text-slate-900 tracking-tight">PMCE <span class="text-blue-600">SERVICES</span></h1>
-                <p class="text-slate-500 font-medium">Advanced Hydraulic & Loading Unit Analysis per BS EN 806-3</p>
-            </div>
-            <div class="flex gap-2 no-print">
-                <button onclick="exportToCSV()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Export to Excel (.csv)
-                </button>
-            </div>
+        <header class="mb-8 border-b border-slate-300 pb-4">
+            <h1 class="text-2xl font-bold text-slate-900">booster_lu: Hydraulic Analysis</h1>
+            <p class="text-sm text-slate-600 font-mono italic">Colebrook-White Transition | Loading Unit Diversity</p>
         </header>
 
-        <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
             
-            <!-- LEFT: APPLIANCE DEFINITION & APARTMENT QUANTITIES -->
             <div class="xl:col-span-1 space-y-6">
-                <!-- Appliance Definitions -->
-                <div class="card p-6 border-l-4 border-l-green-500">
-                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                        Appliance LU Values
-                    </h2>
-                    <div class="space-y-2 text-sm">
-                        <div class="grid grid-cols-3 gap-2 font-bold text-[10px] uppercase text-slate-400 mb-1">
-                            <div class="col-span-2">Appliance Type</div>
-                            <div class="text-center">LU</div>
-                        </div>
-                        <div class="flex items-center gap-2 bg-slate-50 p-2 rounded">
-                            <span class="flex-grow">WC (6L Flush)</span>
-                            <input type="number" id="lu-wc" value="2.0" step="0.5" oninput="calculate()" class="w-14 text-center rounded border font-mono">
-                        </div>
-                        <div class="flex items-center gap-2 bg-slate-50 p-2 rounded">
-                            <span class="flex-grow">WHB / Bidet</span>
-                            <input type="number" id="lu-whb" value="1.0" step="0.5" oninput="calculate()" class="w-14 text-center rounded border font-mono">
-                        </div>
-                        <div class="flex items-center gap-2 bg-slate-50 p-2 rounded">
-                            <span class="flex-grow">Kitchen Sink</span>
-                            <input type="number" id="lu-sink" value="3.0" step="0.5" oninput="calculate()" class="w-14 text-center rounded border font-mono">
-                        </div>
-                        <div class="flex items-center gap-2 bg-slate-50 p-2 rounded">
-                            <span class="flex-grow">Shower (std)</span>
-                            <input type="number" id="lu-shower" value="2.0" step="0.5" oninput="calculate()" class="w-14 text-center rounded border font-mono">
-                        </div>
-                        <div class="flex items-center gap-2 bg-slate-50 p-2 rounded">
-                            <span class="flex-grow">Bath (std)</span>
-                            <input type="number" id="lu-bath" value="4.0" step="0.5" oninput="calculate()" class="w-14 text-center rounded border font-mono">
-                        </div>
-                        <div class="flex items-center gap-2 bg-slate-50 p-2 rounded">
-                            <span class="flex-grow">Washing M/C</span>
-                            <input type="number" id="lu-wm" value="3.0" step="0.5" oninput="calculate()" class="w-14 text-center rounded border font-mono">
-                        </div>
-                        <div class="flex items-center gap-2 bg-slate-50 p-2 rounded">
-                            <input type="text" id="lu-custom-label" value="Custom" class="flex-grow bg-transparent border-none focus:ring-0 text-sm p-0">
-                            <input type="number" id="lu-custom-val" value="0.0" step="0.5" oninput="calculate()" class="w-14 text-center rounded border font-mono">
-                        </div>
+                <div class="card p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-bold text-slate-800">Zone Types & LU</h2>
+                        <button onclick="addZoneType()" class="text-blue-600 text-sm font-bold">+ Add Zone</button>
                     </div>
+                    <div id="zone-defs" class="space-y-3">
+                        </div>
                 </div>
 
-                <!-- Apartment Totals -->
-                <div class="card p-6 border-l-4 border-l-blue-500">
-                    <h2 class="text-lg font-bold mb-4">Apartment Count</h2>
-                    <div class="space-y-4">
+                <div class="card p-4">
+                    <h2 class="font-bold text-slate-800 mb-4">Pipe Constants</h2>
+                    <div class="space-y-3 text-sm">
                         <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Qty of 1P Apts</label>
-                            <input type="number" id="qty-1p" value="0" min="0" oninput="calculate()" class="input-std font-mono text-lg text-blue-600">
-                            <p class="text-[10px] text-slate-400 mt-1 italic">Uses: WC, WHB, Sink, Shower</p>
+                            <label class="block mb-1">Roughness ($k_s$) mm</label>
+                            <input type="number" id="roughness-k" value="0.015" step="0.005" oninput="calculate()" class="input-field">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Qty of 2P Apts</label>
-                            <input type="number" id="qty-2p" value="0" min="0" oninput="calculate()" class="input-std font-mono text-lg text-blue-600">
-                            <p class="text-[10px] text-slate-400 mt-1 italic">Adds: Bath & WM to 1P profile</p>
+                            <label class="block mb-1">Viscosity ($\nu$) $m^2/s$</label>
+                            <input type="number" id="viscosity" value="0.00000131" step="0.00000001" oninput="calculate()" class="input-field">
                         </div>
-                        <div class="pt-4 border-t">
-                            <div class="flex justify-between text-sm">
-                                <span class="text-slate-500">1P LU Value:</span>
-                                <span class="font-bold font-mono" id="val-lu-1p">0.0</span>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-slate-500">2P LU Value:</span>
-                                <span class="font-bold font-mono" id="val-lu-2p">0.0</span>
-                            </div>
+                        <div>
+                            <label class="block mb-1">Static Height ($m$)</label>
+                            <input type="number" id="static-height" value="10" oninput="calculate()" class="input-field">
+                        </div>
+                        <div>
+                            <label class="block mb-1">Residual Pressure ($bar$)</label>
+                            <input type="number" id="residual-bar" value="2.0" step="0.1" oninput="calculate()" class="input-field">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- MIDDLE: NETWORK SECTIONS -->
-            <div class="xl:col-span-2 space-y-6">
-                <div class="card p-6 min-h-[400px]">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold">Network Sections</h2>
-                        <button onclick="addSection()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition no-print">
-                            + Add Section
-                        </button>
+            <div class="xl:col-span-3 space-y-6">
+                <div class="card p-4 overflow-x-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-bold text-slate-800">Pipe Sections</h2>
+                        <button onclick="addSection()" class="bg-slate-800 text-white px-3 py-1 rounded text-sm hover:bg-slate-700">Add Pipe Section</button>
                     </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left border-separate border-spacing-y-2" id="calc-table">
-                            <thead class="text-slate-500 uppercase text-[10px] font-bold">
-                                <tr>
-                                    <th class="px-2 pb-2">Name / Location</th>
-                                    <th class="px-2 pb-2 w-16 text-center">Qty 1P</th>
-                                    <th class="px-2 pb-2 w-16 text-center">Qty 2P</th>
-                                    <th class="px-2 pb-2 w-20 text-center">$\varnothing$ ($mm$)</th>
-                                    <th class="px-2 pb-2 w-16 text-center">Len ($m$)</th>
-                                    <th class="px-2 pb-2 w-12 text-center">Bends</th>
-                                    <th class="px-2 pb-2 w-8 no-print"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="sections-body">
-                                <!-- Generated Rows -->
-                            </tbody>
-                        </table>
-                    </div>
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="w-32">Description</th>
+                                <th id="zone-headers-container" class="p-0">
+                                    </th>
+                                <th class="w-20">$\sum$ LU</th>
+                                <th class="w-20">Flow ($L/s$)</th>
+                                <th class="w-20">ID ($mm$)</th>
+                                <th class="w-20">Len ($m$)</th>
+                                <th class="w-16">Bends</th>
+                                <th class="w-10"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="sections-body"></tbody>
+                    </table>
                 </div>
 
-                <div class="card p-6">
-                    <h2 class="text-xl font-bold mb-4">Site Constants</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-400">Static Height ($m$)</label>
-                            <input type="number" id="static-height" value="15" oninput="calculate()" class="input-std font-mono text-lg">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-400">Min. Pressure @ Outlet ($bar$)</label>
-                            <input type="number" id="residual-bar" value="2.0" step="0.1" oninput="calculate()" class="input-std font-mono text-lg">
-                        </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="card p-4 bg-slate-50 border-l-4 border-slate-400">
+                        <span class="text-xs uppercase text-slate-500">Friction Loss</span>
+                        <div id="res-friction" class="text-xl font-mono font-bold">0.00 mH₂O</div>
+                    </div>
+                    <div class="card p-4 bg-slate-50 border-l-4 border-slate-400">
+                        <span class="text-xs uppercase text-slate-500">Total Req. Head</span>
+                        <div id="res-total-head" class="text-xl font-mono font-bold">0.00 mH₂O</div>
+                    </div>
+                    <div class="card p-4 bg-blue-600 text-white">
+                        <span class="text-xs uppercase opacity-80">Final Duty Point</span>
+                        <div id="res-total-bar" class="text-2xl font-mono font-bold">0.00 bar</div>
                     </div>
                 </div>
-            </div>
-
-            <!-- RIGHT: RESULTS -->
-            <div class="xl:col-span-1 space-y-6">
-                <div class="card p-6 sticky top-8 border-t-8 border-t-blue-600">
-                    <h2 class="text-xl font-black mb-6 uppercase tracking-widest text-slate-400">System Duty</h2>
-                    <div class="space-y-6">
-                        <div>
-                            <div class="text-xs font-bold uppercase text-slate-400">Total Diversified Flow</div>
-                            <div class="text-3xl font-black text-slate-900 font-mono" id="res-total-flow">0.00 L/s</div>
-                            <div class="text-xs text-slate-500" id="res-total-lu">0.0 Total Site LUs</div>
-                        </div>
-                        
-                        <div class="pt-6 border-t border-slate-100 space-y-2">
-                            <div class="flex justify-between"><span class="text-[11px] text-slate-500 uppercase font-bold">Friction Loss</span><span class="font-mono font-bold" id="res-friction">0.00 mH₂O</span></div>
-                            <div class="flex justify-between"><span class="text-[11px] text-slate-500 uppercase font-bold">Static Lift</span><span class="font-mono font-bold" id="res-static">0.00 mH₂O</span></div>
-                            <div class="flex justify-between"><span class="text-[11px] text-slate-500 uppercase font-bold">Residual Req.</span><span class="font-mono font-bold" id="res-residual">0.00 mH₂O</span></div>
-                        </div>
-
-                        <div class="bg-blue-600 p-6 rounded-2xl text-white shadow-lg">
-                            <div class="text-xs font-bold uppercase opacity-80 mb-1 text-center">Calculated Booster Head</div>
-                            <div class="text-4xl font-black font-mono text-center" id="res-total-bar">0.00 bar</div>
-                            <div class="text-xs font-bold opacity-80 text-center mt-1" id="res-total-head">0.00 mH₂O</div>
-                        </div>
-
-                        <div id="warnings" class="space-y-2 no-print"></div>
-                    </div>
-                </div>
+                <div id="warnings" class="space-y-2"></div>
             </div>
         </div>
     </div>
 
     <script>
-        let sectionCount = 0;
+        let zones = [
+            { id: 1, label: 'WC', lu: 0.5 },
+            { id: 2, label: 'Sink', lu: 0.2 }
+        ];
+        let sections = [];
+        let sectionIdCounter = 0;
 
-        function addSection() {
-            sectionCount++;
-            const tbody = document.getElementById('sections-body');
-            const row = document.createElement('tr');
-            row.id = `section-${sectionCount}`;
-            row.className = "bg-white group transition-all duration-200 hover:shadow-md";
-            row.innerHTML = `
-                <td class="px-2 py-3 border-b border-slate-100">
-                    <input type="text" placeholder="e.g. Riser 1" class="w-full bg-transparent text-sm font-bold focus:outline-none section-name">
-                </td>
-                <td class="px-2 py-3 border-b border-slate-100 text-center">
-                    <input type="number" value="0" min="0" oninput="calculate()" class="w-full p-1 border rounded text-center section-qty1p font-mono">
-                </td>
-                <td class="px-2 py-3 border-b border-slate-100 text-center">
-                    <input type="number" value="0" min="0" oninput="calculate()" class="w-full p-1 border rounded text-center section-qty2p font-mono">
-                </td>
-                <td class="px-2 py-3 border-b border-slate-100 text-center">
-                    <input type="number" value="50" oninput="calculate()" class="w-full p-1 border rounded text-center section-dia font-mono">
-                </td>
-                <td class="px-2 py-3 border-b border-slate-100 text-center">
-                    <input type="number" value="10" oninput="calculate()" class="w-full p-1 border rounded text-center section-len font-mono">
-                </td>
-                <td class="px-2 py-3 border-b border-slate-100 text-center">
-                    <input type="number" value="5" oninput="calculate()" class="w-full p-1 border rounded text-center section-bends font-mono">
-                </td>
-                <td class="px-2 py-3 border-b border-slate-100 text-right no-print">
-                    <button onclick="removeSection(${sectionCount})" class="text-slate-300 hover:text-red-500 transition-colors text-xl leading-none">&times;</button>
-                </td>
-            `;
-            tbody.appendChild(row);
+        function addZoneType() {
+            const id = Date.now();
+            zones.push({ id: id, label: 'New Zone', lu: 1.0 });
+            renderZones();
+            renderSections();
+        }
+
+        function removeZone(id) {
+            zones = zones.filter(z => z.id !== id);
+            renderZones();
+            renderSections();
+        }
+
+        function updateZone(id, field, value) {
+            const zone = zones.find(z => z.id === id);
+            if (field === 'lu') zone.lu = parseFloat(value) || 0;
+            else zone.label = value;
+            renderZoneHeaders();
             calculate();
         }
 
+        function renderZones() {
+            const container = document.getElementById('zone-defs');
+            container.innerHTML = zones.map(z => `
+                <div class="flex gap-2 items-center bg-slate-50 p-2 rounded">
+                    <input type="text" value="${z.label}" onchange="updateZone(${z.id}, 'label', this.value)" class="text-xs font-bold w-full bg-transparent border-b">
+                    <input type="number" value="${z.lu}" step="0.1" onchange="updateZone(${z.id}, 'lu', this.value)" class="text-xs w-16 border rounded p-1">
+                    <button onclick="removeZone(${z.id})" class="text-red-400">&times;</button>
+                </div>
+            `).join('');
+            renderZoneHeaders();
+        }
+
+        function renderZoneHeaders() {
+            const container = document.getElementById('zone-headers-container');
+            container.innerHTML = `<div class="flex">${zones.map(z => `<div class="w-16 text-center text-[10px] font-bold border-r px-1 truncate">${z.label}</div>`).join('')}</div>`;
+        }
+
+        function addSection() {
+            sectionIdCounter++;
+            sections.push({
+                id: sectionIdCounter,
+                desc: 'Section ' + sectionIdCounter,
+                zoneCounts: {}, // {zoneId: count}
+                dia: 32,
+                len: 10,
+                bends: 4
+            });
+            renderSections();
+        }
+
         function removeSection(id) {
-            document.getElementById(`section-${id}`).remove();
+            sections = sections.filter(s => s.id !== id);
+            renderSections();
+        }
+
+        function updateSection(id, field, value, zoneId = null) {
+            const section = sections.find(s => s.id === id);
+            if (zoneId) {
+                section.zoneCounts[zoneId] = parseFloat(value) || 0;
+            } else {
+                section[field] = value;
+            }
+            calculate();
+        }
+
+        function renderSections() {
+            const tbody = document.getElementById('sections-body');
+            tbody.innerHTML = sections.map(s => `
+                <tr class="border-b hover:bg-slate-50">
+                    <td class="p-2"><input type="text" value="${s.desc}" oninput="updateSection(${s.id}, 'desc', this.value)" class="w-full text-xs"></td>
+                    <td class="p-0"><div class="flex">${zones.map(z => `
+                        <div class="w-16 border-r p-1">
+                            <input type="number" value="${s.zoneCounts[z.id] || 0}" oninput="updateSection(${s.id}, 'counts', this.value, ${z.id})" class="w-full text-center text-xs bg-transparent">
+                        </div>
+                    `).join('')}</div></td>
+                    <td class="p-2 font-mono text-xs text-center" id="total-lu-${s.id}">0</td>
+                    <td class="p-2 font-mono text-xs text-center font-bold" id="flow-ls-${s.id}">0.00</td>
+                    <td class="p-2"><input type="number" value="${s.dia}" oninput="updateSection(${s.id}, 'dia', this.value)" class="w-full text-xs border rounded p-1"></td>
+                    <td class="p-2"><input type="number" value="${s.len}" oninput="updateSection(${s.id}, 'len', this.value)" class="w-full text-xs border rounded p-1"></td>
+                    <td class="p-2"><input type="number" value="${s.bends}" oninput="updateSection(${s.id}, 'bends', this.value)" class="w-full text-xs border rounded p-1"></td>
+                    <td class="p-2"><button onclick="removeSection(${s.id})" class="text-red-400">×</button></td>
+                </tr>
+            `).join('');
             calculate();
         }
 
         function calculate() {
-            // Appliance LU Base Values
-            const luWC = parseFloat(document.getElementById('lu-wc').value) || 0;
-            const luWHB = parseFloat(document.getElementById('lu-whb').value) || 0;
-            const luSink = parseFloat(document.getElementById('lu-sink').value) || 0;
-            const luShower = parseFloat(document.getElementById('lu-shower').value) || 0;
-            const luBath = parseFloat(document.getElementById('lu-bath').value) || 0;
-            const luWM = parseFloat(document.getElementById('lu-wm').value) || 0;
-            const luCust = parseFloat(document.getElementById('lu-custom-val').value) || 0;
-
-            // Apartment Profiles
-            const lu1pTotal = luWC + luWHB + luSink + luShower + luCust;
-            const lu2pTotal = lu1pTotal + luBath + luWM;
-
-            document.getElementById('val-lu-1p').innerText = lu1pTotal.toFixed(1);
-            document.getElementById('val-lu-2p').innerText = lu2pTotal.toFixed(1);
-
-            // Globals
-            const globalQty1p = parseFloat(document.getElementById('qty-1p').value) || 0;
-            const globalQty2p = parseFloat(document.getElementById('qty-2p').value) || 0;
-            
-            let totalFrictionLoss = 0;
-            let totalSiteLU = (globalQty1p * lu1pTotal) + (globalQty2p * lu2pTotal);
+            const ks = parseFloat(document.getElementById('roughness-k').value) / 1000;
+            const nu = parseFloat(document.getElementById('viscosity').value);
+            const g = 9.81;
+            let totalFrictionHead = 0;
             let warningsHtml = '';
-            
-            const rows = document.querySelectorAll('#sections-body tr');
-            
-            rows.forEach((row, index) => {
-                const s1p = parseFloat(row.querySelector('.section-qty1p').value) || 0;
-                const s2p = parseFloat(row.querySelector('.section-qty2p').value) || 0;
-                const d_mm = parseFloat(row.querySelector('.section-dia').value) || 1;
-                const L_m = parseFloat(row.querySelector('.section-len').value) || 0;
-                const b = parseFloat(row.querySelector('.section-bends').value) || 0;
 
-                const sectionLU = (s1p * lu1pTotal) + (s2p * lu2pTotal);
+            sections.forEach(s => {
+                // Calculate LUs and Flow
+                let totalLU = 0;
+                zones.forEach(z => {
+                    totalLU += (s.zoneCounts[z.id] || 0) * z.lu;
+                });
                 
-                if (sectionLU > 0) {
-                    const Q_ls = 0.2 * Math.sqrt(sectionLU);
-                    const Q_m3s = Q_ls / 1000;
-                    const d_m = d_mm / 1000;
-                    const area = Math.PI * Math.pow(d_m / 2, 2);
-                    const v = Q_m3s / area;
+                // Diversity formula (Simplified BS EN 806 / CIBSE conversion)
+                // Flow (L/s) = sqrt(Total LU) * 0.2 (as a baseline coefficient)
+                const flow_ls = totalLU > 0 ? Math.sqrt(totalLU) * 0.2 : 0;
+                
+                document.getElementById(`total-lu-${s.id}`).innerText = totalLU.toFixed(1);
+                document.getElementById(`flow-ls-${s.id}`).innerText = flow_ls.toFixed(2);
 
-                    if (v > 2.0) {
-                        warningsHtml += `<div class="bg-red-50 text-red-700 text-[10px] p-2 rounded border border-red-200">⚠️ Section ${index+1}: High Velocity (${v.toFixed(2)} m/s)</div>`;
-                    }
+                if (flow_ls <= 0) return;
 
-                    // Equivalent length (30D for bends)
-                    const L_eq = L_m + (b * (30 * d_m));
-                    // Hazen-Williams
-                    const h_f = (10.67 * L_eq * Math.pow(Q_m3s, 1.852)) / (Math.pow(140, 1.852) * Math.pow(d_m, 4.87));
-                    totalFrictionLoss += h_f;
+                const Q = flow_ls / 1000;
+                const D = s.dia / 1000;
+                const L = parseFloat(s.len);
+                const bends = parseFloat(s.bends);
+                const Leq = L + (bends * (30 * D));
+                
+                const velocity = Q / (Math.PI * Math.pow(D/2, 2));
+                const Re = (velocity * D) / nu;
+
+                // Colebrook-White friction factor (f) - Iterative approximation
+                let f = 0.02; 
+                for(let i=0; i<5; i++) {
+                    f = 1 / Math.pow(-2 * Math.log10((ks/(3.7*D)) + (2.51/(Re * Math.sqrt(f)))), 2);
                 }
+
+                // Darcy-Weisbach: hf = f * (L/D) * (v^2 / 2g)
+                const hf = f * (Leq / D) * (Math.pow(velocity, 2) / (2 * g));
+                totalFrictionHead += hf;
+
+                if (velocity > 2.0) warningsHtml += `<div class="p-2 bg-orange-100 text-orange-800 text-xs rounded">⚠️ ${s.desc}: High Velocity (${velocity.toFixed(2)} m/s)</div>`;
             });
 
-            const boosterFlow = 0.2 * Math.sqrt(totalSiteLU);
-            const sH = parseFloat(document.getElementById('static-height').value) || 0;
-            const rB = parseFloat(document.getElementById('residual-bar').value) || 0;
-            const rH = rB * 10.197;
-            const tH = totalFrictionLoss + sH + rH;
+            const staticHead = parseFloat(document.getElementById('static-height').value) || 0;
+            const residualBar = parseFloat(document.getElementById('residual-bar').value) || 0;
+            const residualHead = residualBar * 10.197;
 
-            document.getElementById('res-total-flow').innerText = `${boosterFlow.toFixed(2)} L/s`;
-            document.getElementById('res-total-lu').innerText = `${totalSiteLU.toFixed(1)} Total Site LUs`;
-            document.getElementById('res-friction').innerText = `${totalFrictionLoss.toFixed(2)} mH₂O`;
-            document.getElementById('res-static').innerText = `${sH.toFixed(2)} mH₂O`;
-            document.getElementById('res-residual').innerText = `${rH.toFixed(2)} mH₂O`;
-            document.getElementById('res-total-head').innerText = `${tH.toFixed(2)} mH₂O`;
-            document.getElementById('res-total-bar').innerText = `${(tH / 10.197).toFixed(2)} bar`;
+            const totalHead = totalFrictionHead + staticHead + residualHead;
+            const totalBar = totalHead / 10.197;
+
+            document.getElementById('res-friction').innerText = `${totalFrictionHead.toFixed(2)} mH₂O`;
+            document.getElementById('res-total-head').innerText = `${totalHead.toFixed(2)} mH₂O`;
+            document.getElementById('res-total-bar').innerText = `${totalBar.toFixed(2)} bar`;
             document.getElementById('warnings').innerHTML = warningsHtml;
         }
 
-        function exportToCSV() {
-            let csv = "PMCE SERVICES - BOOSTER CALCULATION REPORT\n\n";
-            csv += "SECTION DATA\n";
-            csv += "Name,Qty 1P,Qty 2P,Dia (mm),Length (m),Bends,LU,Flow (L/s)\n";
-            
-            const lu1p = parseFloat(document.getElementById('val-lu-1p').innerText);
-            const lu2p = parseFloat(document.getElementById('val-lu-2p').innerText);
-            
-            document.querySelectorAll('#sections-body tr').forEach(row => {
-                const name = row.querySelector('.section-name').value || "Unnamed";
-                const q1 = row.querySelector('.section-qty1p').value;
-                const q2 = row.querySelector('.section-qty2p').value;
-                const dia = row.querySelector('.section-dia').value;
-                const len = row.querySelector('.section-len').value;
-                const bends = row.querySelector('.section-bends').value;
-                const sLU = (q1 * lu1p) + (q2 * lu2p);
-                const Q = 0.2 * Math.sqrt(sLU);
-                csv += `${name},${q1},${q2},${dia},${len},${bends},${sLU.toFixed(1)},${Q.toFixed(3)}\n`;
-            });
-
-            csv += `\nSUMMARY\n`;
-            csv += `Total Global 1P Apts,${document.getElementById('qty-1p').value}\n`;
-            csv += `Total Global 2P Apts,${document.getElementById('qty-2p').value}\n`;
-            csv += `Total System Flow,${document.getElementById('res-total-flow').innerText}\n`;
-            csv += `Total System Duty,${document.getElementById('res-total-bar').innerText}\n`;
-
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('href', url);
-            a.setAttribute('download', 'Booster_Analysis_Report.csv');
-            a.click();
-        }
-
         window.onload = () => {
+            renderZones();
             addSection();
-            calculate();
         };
     </script>
 </body>
