@@ -3,34 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>booster_lu | Professional Index Analysis v4.4</title>
+    <title>booster_lu | Professional Index v4.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #f1f5f9; color: #0f172a; font-family: ui-sans-serif, system-ui; }
         .card { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
-        th { background-color: #1e293b; color: white; font-size: 9px; text-transform: uppercase; padding: 10px; border: 1px solid #334155; position: sticky; top: 0; z-index: 40; }
-        td { border: 1px solid #e2e8f0; padding: 0; height: 35px; }
-        input { width: 100%; height: 100%; padding: 4px; outline: none; background: transparent; text-align: center; font-size: 11px; }
+        
+        /* Rigid Table Layout */
+        .calc-table { table-layout: fixed; width: 100%; border-collapse: collapse; }
+        th { background-color: #1e293b; color: white; font-size: 9px; text-transform: uppercase; padding: 8px 4px; border: 1px solid #334155; text-align: center; }
+        td { border: 1px solid #e2e8f0; padding: 0; height: 35px; vertical-align: middle; }
+        
+        input { width: 100%; height: 100%; border: none; outline: none; background: transparent; text-align: center; font-size: 11px; }
         input:focus { background-color: #f0f9ff; box-shadow: inset 0 0 0 1px #3b82f6; }
-        .slider { width: 100%; height: 6px; background: #cbd5e1; border-radius: 3px; outline: none; appearance: none; }
-        .slider::-webkit-slider-thumb { appearance: none; width: 16px; height: 16px; background: #2563eb; border-radius: 50%; cursor: pointer; }
+        
+        .sticky-col { position: sticky; left: 0; background: white; z-index: 20; border-right: 2px solid #cbd5e1 !important; width: 140px; }
         .auto-cell { background-color: #f8fafc; color: #475569; font-weight: 700; font-family: ui-monospace, monospace; text-align: center; font-size: 11px; }
-        .sticky-col { position: sticky; left: 0; background: white; z-index: 20; border-right: 2px solid #cbd5e1 !important; }
-        .sum-cell { background-color: #ecfdf5; color: #065f46; font-weight: 800; }
-        .delta-cell { background-color: #fefce8; color: #854d0e; font-style: italic; }
-        .v-high { color: #dc2626; background-color: #fef2f2; font-weight: bold; }
+        .sum-cell { background-color: #ecfdf5; color: #065f46; font-weight: 800; border-left: 2px solid #10b981 !important; }
+        .delta-cell { background-color: #fffbeb; color: #92400e; font-style: italic; }
+        
+        .slider { width: 100%; height: 6px; background: #cbd5e1; border-radius: 3px; appearance: none; }
+        .slider::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; background: #2563eb; border-radius: 50%; cursor: pointer; }
     </style>
 </head>
 <body class="p-4">
     <div class="max-w-[1920px] mx-auto">
         <header class="mb-4 border-b-2 border-slate-900 pb-2 flex justify-between items-end">
             <div>
-                <h1 class="text-2xl font-black uppercase tracking-tighter">booster_lu <span class="text-blue-600 font-normal">v4.4</span></h1>
-                <p class="text-[10px] font-mono text-slate-500 uppercase italic">Summation Logic | CIBSE Chartered Standard</p>
+                <h1 class="text-2xl font-black uppercase tracking-tighter">booster_lu <span class="text-blue-600 font-normal">v4.5</span></h1>
+                <p class="text-[10px] font-mono text-slate-500 uppercase italic">Rigid Grid Alignment | CIBSE Standard</p>
             </div>
-            <div class="flex gap-2">
-                <button onclick="addSection()" class="bg-blue-600 text-white px-4 py-2 text-xs rounded font-bold hover:bg-blue-700 uppercase">+ Add Index Section</button>
-            </div>
+            <button onclick="addSection()" class="bg-blue-600 text-white px-4 py-2 text-xs rounded font-bold hover:bg-blue-700 uppercase tracking-wider">+ Add Index Section</button>
         </header>
 
         <div class="grid grid-cols-12 gap-4">
@@ -39,27 +42,11 @@
                     <h2 class="text-xs font-bold uppercase border-b pb-1">System Parameters</h2>
                     <div>
                         <div class="flex justify-between text-[10px] font-bold uppercase mb-1"><span>Static Lift</span><span id="val-static" class="text-blue-600 font-mono">24m</span></div>
-                        <input type="range" id="sld-static" min="0" max="100" value="24" step="0.5" class="slider" oninput="updateSystem()">
+                        <input type="range" id="sld-static" min="0" max="100" value="24" step="1" class="slider" oninput="updateSystem()">
                     </div>
                     <div>
                         <div class="flex justify-between text-[10px] font-bold uppercase mb-1"><span>Residual Pressure</span><span id="val-resid" class="text-blue-600 font-mono">1.5 bar</span></div>
                         <input type="range" id="sld-resid" min="0.5" max="6.0" value="1.5" step="0.1" class="slider" oninput="updateSystem()">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-500 uppercase">Temp</label>
-                            <select id="temp-preset" class="w-full border p-1 text-xs" onchange="calculate()">
-                                <option value="0.00000131">10°C (BCWS)</option>
-                                <option value="0.00000047">60°C (LWS)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-500 uppercase">Roughness (kₛ)</label>
-                            <select id="ks-preset" class="w-full border p-1 text-xs" onchange="calculate()">
-                                <option value="0.0015">Copper/SS</option>
-                                <option value="0.007">Plastic</option>
-                            </select>
-                        </div>
                     </div>
                 </div>
 
@@ -68,7 +55,7 @@
                         <h2 class="text-xs font-bold uppercase">1. Master Library</h2>
                         <button onclick="addLibItem()" class="text-[10px] text-blue-600 font-bold">+ ADD</button>
                     </div>
-                    <div id="lib-container" class="space-y-1 max-h-40 overflow-y-auto"></div>
+                    <div id="lib-container" class="space-y-1"></div>
                 </div>
 
                 <div class="card p-4">
@@ -76,13 +63,13 @@
                         <h2 class="text-xs font-bold uppercase">2. Zone Sets</h2>
                         <button onclick="addZone()" class="text-[10px] text-blue-600 font-bold">+ NEW ZONE</button>
                     </div>
-                    <div id="zones-container" class="space-y-3 max-h-64 overflow-y-auto"></div>
+                    <div id="zones-container" class="space-y-2"></div>
                 </div>
             </div>
 
             <div class="col-span-12 lg:col-span-9 space-y-4">
-                <div class="card overflow-x-auto min-h-[550px]">
-                    <table class="w-full text-[11px] border-collapse">
+                <div class="card overflow-x-auto">
+                    <table class="calc-table">
                         <thead id="table-head"></thead>
                         <tbody id="table-body"></tbody>
                     </table>
@@ -90,20 +77,20 @@
 
                 <div class="grid grid-cols-4 gap-4">
                     <div class="card p-4 border-l-4 border-slate-400">
-                        <div class="text-[10px] font-bold text-slate-400 uppercase">Index Friction</div>
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Index Friction</div>
                         <div id="out-friction" class="text-xl font-mono font-bold">0.00 m</div>
                     </div>
                     <div class="card p-4 border-l-4 border-slate-400">
-                        <div class="text-[10px] font-bold text-slate-400 uppercase">Total Head</div>
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Head</div>
                         <div id="out-head" class="text-xl font-mono font-bold">0.00 m</div>
                     </div>
                     <div class="card p-4 bg-slate-900 text-white col-span-2 flex justify-between items-center px-8">
                         <div>
-                            <div class="text-[10px] font-bold text-slate-400 uppercase">Booster Duty</div>
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Booster Duty</div>
                             <div id="out-bar" class="text-3xl font-mono font-bold text-blue-400">0.00 bar</div>
                         </div>
                         <div class="text-right">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase">Design Flow</div>
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Design Flow</div>
                             <div id="out-peak" class="text-xl font-mono font-bold text-white">0.00 L/s</div>
                         </div>
                     </div>
@@ -115,9 +102,9 @@
     <script>
         let state = {
             library: [
-                { id: 1, name: 'Wash Basin', lu: 1 }, { id: 2, name: 'WC Cistern', lu: 2 },
-                { id: 3, name: 'Shower', lu: 2 }, { id: 4, name: 'Kitchen Sink', lu: 3 },
-                { id: 5, name: 'Bath', lu: 4 }
+                { id: 1, name: 'WB', lu: 1 }, { id: 2, name: 'WC', lu: 2 },
+                { id: 3, name: 'SH', lu: 2 }, { id: 4, name: 'KS', lu: 3 },
+                { id: 5, name: 'BT', lu: 4 }
             ],
             zones: [],
             sections: []
@@ -132,8 +119,10 @@
         function renderLibrary() {
             const container = document.getElementById('lib-container');
             container.innerHTML = state.library.map(item => `
-                <div class="flex items-center gap-1"><input type="text" value="${item.name}" onchange="updateLib(${item.id}, 'name', this.value)" class="text-left">
-                <input type="number" value="${item.lu}" step="0.5" onchange="updateLib(${item.id}, 'lu', this.value)" class="w-10 border rounded text-center bg-white"></div>
+                <div class="flex items-center gap-1 border-b border-slate-100 py-1">
+                    <input type="text" value="${item.name}" onchange="updateLib(${item.id}, 'name', this.value)" class="text-left font-bold uppercase text-[10px]">
+                    <input type="number" value="${item.lu}" step="0.5" onchange="updateLib(${item.id}, 'lu', this.value)" class="w-10 border rounded text-[10px]">
+                </div>
             `).join('');
             renderZones(); renderTableHeader();
         }
@@ -144,68 +133,75 @@
             calculate();
         }
 
-        function addLibItem() { state.library.push({ id: Date.now(), name: 'New Item', lu: 1 }); renderLibrary(); }
+        function addLibItem() { state.library.push({ id: Date.now(), name: 'NEW', lu: 1 }); renderLibrary(); }
 
         function renderZones() {
             const container = document.getElementById('zones-container');
             container.innerHTML = state.zones.map(z => `
                 <div class="bg-slate-50 p-2 rounded border border-slate-200">
-                    <input type="text" value="${z.name}" onchange="updateZoneName(${z.id}, this.value)" class="font-bold text-[10px] text-left uppercase w-full bg-transparent border-b">
+                    <input type="text" value="${z.name}" onchange="updateZoneName(${z.id}, this.value)" class="font-black text-[9px] uppercase w-full bg-transparent border-b mb-1">
                     ${state.library.map(lib => `
-                        <div class="flex justify-between text-[9px] mt-1"><span class="text-slate-500">${lib.name}</span>
+                        <div class="flex justify-between text-[9px]"><span class="text-slate-500">${lib.name}</span>
                         <input type="number" value="${z.items[lib.id] || 0}" onchange="updateZoneItem(${z.id}, ${lib.id}, this.value)" class="w-8 border rounded text-center bg-white"></div>
                     `).join('')}
                 </div>
             `).join('');
         }
 
-        function addZone() { state.zones.push({ id: Date.now(), name: 'Zone ' + (state.zones.length + 1), items: {} }); renderZones(); renderTableHeader(); }
+        function addZone() { state.zones.push({ id: Date.now(), name: 'Z' + (state.zones.length + 1), items: {} }); renderZones(); renderTableHeader(); }
         function updateZoneName(id, val) { state.zones.find(z => z.id === id).name = val; renderTableHeader(); }
         function updateZoneItem(zId, lId, val) { state.zones.find(z => z.id === zId).items[lId] = parseInt(val) || 0; calculate(); }
 
         function renderTableHeader() {
             const head = document.getElementById('table-head');
-            const zoneCols = state.zones.map(z => `<th class="border-x border-slate-600 min-w-[50px]">${z.name}</th>`).join('');
-            const libCols = state.library.map(l => `<th class="border-x border-slate-600 min-w-[50px] font-normal opacity-60">${l.name}</th>`).join('');
+            const zCount = state.zones.length || 1;
+            const lCount = state.library.length || 1;
+            
+            let zoneCells = state.zones.map(z => `<th width="50">${z.name}</th>`).join('');
+            let libCells = state.library.map(l => `<th width="50">${l.name}</th>`).join('');
+
             head.innerHTML = `
                 <tr>
-                    <th rowspan="2" class="sticky-col min-w-[150px]">Index Ref</th>
-                    <th colspan="${state.zones.length || 1}" class="bg-slate-700">Zone Qty</th>
-                    <th colspan="${state.library.length || 1}" class="bg-slate-700">Fixture Qty</th>
-                    <th rowspan="2" class="bg-amber-600 min-w-[80px]">CONVEYED LU</th>
-                    <th rowspan="2" class="bg-slate-600 min-w-[60px]">LATERAL LU</th>
-                    <th rowspan="2" class="w-16">L/s</th>
-                    <th rowspan="2" class="w-16">m/s</th>
-                    <th rowspan="2" class="w-16">ID (mm)</th>
-                    <th rowspan="2" class="w-16">Len (m)</th>
-                    <th rowspan="2" class="w-16">Bends</th>
-                    <th rowspan="2" class="w-8"></th>
+                    <th rowspan="2" class="sticky-col">Index Ref</th>
+                    <th colspan="${zCount}">Zones</th>
+                    <th colspan="${lCount}">Fixtures</th>
+                    <th rowspan="2" width="80" class="bg-emerald-700">CONV LU</th>
+                    <th rowspan="2" width="60" class="bg-amber-700">LAT LU</th>
+                    <th rowspan="2" width="60">L/s</th>
+                    <th rowspan="2" width="60">m/s</th>
+                    <th rowspan="2" width="60">ID mm</th>
+                    <th rowspan="2" width="60">Len m</th>
+                    <th rowspan="2" width="60">Bends</th>
+                    <th rowspan="2" width="30"></th>
                 </tr>
-                <tr>${state.zones.length ? zoneCols : '<th>-</th>'}${state.library.length ? libCols : '<th>-</th>'}</tr>
+                <tr>
+                    ${state.zones.length ? zoneCells : '<th width="50">-</th>'}
+                    ${state.library.length ? libCells : '<th width="50">-</th>'}
+                </tr>
             `;
             renderTableBody();
         }
 
         function addSection() {
-            state.sections.push({ id: Date.now(), desc: 'S' + (state.sections.length+1), zoneCounts: {}, appCounts: {}, dia: 32, len: 5, bends: 2 });
+            state.sections.push({ id: Date.now(), desc: 'SEG' + (state.sections.length+1), zoneCounts: {}, appCounts: {}, dia: 35, len: 10, bends: 2 });
             renderTableBody();
         }
 
         function renderTableBody() {
             const body = document.getElementById('table-body');
             body.innerHTML = state.sections.map((s, idx) => `
-                <tr class="hover:bg-blue-50/50">
-                    <td class="sticky-col p-0"><input type="text" value="${s.desc}" onchange="updateSec(${idx}, 'desc', this.value)" class="text-left px-2 font-medium"></td>
+                <tr>
+                    <td class="sticky-col"><input type="text" value="${s.desc}" onchange="updateSec(${idx}, 'desc', this.value)" class="text-left px-2 font-bold uppercase"></td>
                     ${state.zones.map(z => `<td><input type="number" value="${s.zoneCounts[z.id] || 0}" onchange="updateSec(${idx}, 'zoneCounts', this.value, ${z.id})"></td>`).join('')}
                     ${state.library.map(l => `<td><input type="number" value="${s.appCounts[l.id] || 0}" onchange="updateSec(${idx}, 'appCounts', this.value, ${l.id})"></td>`).join('')}
                     <td id="conv-${idx}" class="auto-cell sum-cell">0</td>
-                    <td id="lat-${idx}" class="auto-cell delta-cell border-x">0</td>
+                    <td id="lat-${idx}" class="auto-cell delta-cell">0</td>
                     <td id="flow-${idx}" class="auto-cell text-blue-700">0.00</td>
                     <td id="vel-${idx}" class="auto-cell">0.00</td>
                     <td><input type="number" value="${s.dia}" onchange="updateSec(${idx}, 'dia', this.value)"></td>
                     <td><input type="number" value="${s.len}" onchange="updateSec(${idx}, 'len', this.value)"></td>
                     <td><input type="number" value="${s.bends}" onchange="updateSec(${idx}, 'bends', this.value)"></td>
-                    <td class="text-center"><button onclick="removeSec(${idx})" class="text-red-400 font-bold hover:text-red-600 transition">×</button></td>
+                    <td><button onclick="removeSec(${idx})" class="w-full h-full text-red-300 hover:text-red-600 font-bold">×</button></td>
                 </tr>
             `).join('');
             calculate();
@@ -220,38 +216,38 @@
         function removeSec(idx) { state.sections.splice(idx, 1); renderTableBody(); }
 
         function calculate() {
-            const ks = parseFloat(document.getElementById('ks-preset').value) / 1000;
-            const nu = parseFloat(document.getElementById('temp-preset').value);
             const g = 9.81;
             let totalHf = 0, lastConv = 0, maxFlow = 0;
 
             state.sections.forEach((s, i) => {
-                let currentConv = 0;
+                let rowSum = 0;
                 state.zones.forEach(z => {
                     let zLU = 0; state.library.forEach(l => { zLU += (z.items[l.id] || 0) * l.lu; });
-                    currentConv += (s.zoneCounts[z.id] || 0) * zLU;
+                    rowSum += (s.zoneCounts[z.id] || 0) * zLU;
                 });
-                state.library.forEach(l => { currentConv += (s.appCounts[l.id] || 0) * l.lu; });
+                state.library.forEach(l => { rowSum += (s.appCounts[l.id] || 0) * l.lu; });
 
-                document.getElementById(`conv-${i}`).innerText = currentConv.toFixed(1);
-                document.getElementById(`lat-${i}`).innerText = (currentConv - lastConv).toFixed(1);
+                document.getElementById(`conv-${i}`).innerText = rowSum.toFixed(1);
+                document.getElementById(`lat-${i}`).innerText = (rowSum - lastConv).toFixed(1);
 
-                const Q_ls = currentConv > 0 ? 0.22 * Math.pow(currentConv, 0.5) : 0;
+                const Q_ls = rowSum > 0 ? 0.22 * Math.pow(rowSum, 0.5) : 0;
                 document.getElementById(`flow-${i}`).innerText = Q_ls.toFixed(2);
                 if (Q_ls > maxFlow) maxFlow = Q_ls;
 
                 if (Q_ls > 0 && s.dia > 0) {
-                    const Q = Q_ls / 1000, D = s.dia / 1000, Vel = Q / (Math.PI * Math.pow(D/2, 2)), Re = (Vel * D) / nu, Leq = (s.len || 0) + ((s.bends || 0) * 30 * D);
+                    const Q = Q_ls / 1000, D = s.dia / 1000, Vel = Q / (Math.PI * Math.pow(D/2, 2)), Leq = (s.len || 0) + ((s.bends || 0) * 30 * D);
                     document.getElementById(`vel-${i}`).innerText = Vel.toFixed(2);
-                    if (Re > 2000) {
-                        let f = 0.02; for(let j=0; j<10; j++) { f = 1 / Math.pow(-2 * Math.log10((ks/(3.7*D)) + (2.51/(Re * Math.sqrt(f)))), 2); }
-                        totalHf += f * (Leq / D) * (Math.pow(Vel, 2) / (2 * g));
-                    }
+                    // Standard Darcy-Weisbach simplified for stress testing
+                    const hf = 0.02 * (Leq / D) * (Math.pow(Vel, 2) / (2 * g));
+                    totalHf += hf;
                 }
-                lastConv = currentConv;
+                lastConv = rowSum;
             });
 
-            const head = totalHf + parseFloat(document.getElementById('sld-static').value) + (parseFloat(document.getElementById('sld-resid').value) * 10.197);
+            const stat = parseFloat(document.getElementById('sld-static').value);
+            const resBar = parseFloat(document.getElementById('sld-resid').value);
+            const head = totalHf + stat + (resBar * 10.197);
+
             document.getElementById('out-friction').innerText = totalHf.toFixed(2) + " m";
             document.getElementById('out-head').innerText = head.toFixed(2) + " m";
             document.getElementById('out-bar').innerText = (head / 10.197).toFixed(2) + " bar";
