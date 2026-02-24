@@ -3,105 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Engineering U-Value Archive & PDF Tool</title>
+    <title>Regulatory U-Value Archive (1982-2026)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .mono { font-family: 'Roboto Mono', monospace; }
-    </style>
 </head>
-<body class="bg-gray-100 p-4 sm:p-8 min-h-screen">
+<body class="bg-white p-8">
 
-    <div class="max-w-6xl mx-auto bg-white shadow-xl rounded-md border-t-8 border-blue-900 p-6 sm:p-10">
-        <header class="flex flex-col md:flex-row justify-between items-start mb-8 border-b pb-6 gap-4">
-            <div>
-                <h1 class="text-2xl font-black text-slate-900 uppercase italic">Technical Standards Archive</h1>
-                <p class="text-sm text-slate-500">Regulatory U-Value ($W/m^2K$) & Linear Thermal Transmittance ($\Psi$)</p>
-            </div>
-            <div class="flex flex-col gap-2 w-full md:w-auto">
-                <input id="projectName" type="text" placeholder="Project Reference/Client Name" class="border p-2 text-sm rounded-sm">
-                <button id="exportPdf" class="bg-slate-900 hover:bg-blue-800 text-white text-xs font-bold py-3 px-6 rounded-sm shadow-md transition-all">
-                    GENERATE COMPLIANCE REPORT (PDF)
-                </button>
-            </div>
-        </header>
+    <div class="max-w-6xl mx-auto">
+        <div class="flex justify-between items-center mb-6 border-b-2 border-black pb-4">
+            <h1 class="text-xl font-bold uppercase">U-Value & Psi-Value Historical Database</h1>
+            <button id="exportPdf" class="bg-black text-white px-4 py-2 text-sm font-bold hover:bg-gray-800 transition-colors">CREATE PDF</button>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 bg-slate-50 p-6 border border-slate-200">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div>
-                <label class="block text-xs font-black mb-2 uppercase tracking-widest text-slate-600">Region</label>
-                <select id="country" class="w-full border-slate-300 rounded-sm text-sm p-3 bg-white border font-semibold">
-                    <option value="scotland">Scotland (Building Standards)</option>
-                    <option value="england">England & Wales (Approved Doc L)</option>
-                    <option value="passivhaus">International (PHI Standard)</option>
+                <label class="block text-xs font-bold uppercase mb-1">Region</label>
+                <select id="country" class="w-full border border-black p-2 text-sm bg-gray-50">
+                    <option value="scotland">Scotland (Section 6)</option>
+                    <option value="england">England (Part L)</option>
+                    <option value="passivhaus">Passivhaus</option>
                 </select>
             </div>
             <div>
-                <label class="block text-xs font-black mb-2 uppercase tracking-widest text-slate-600">Building Category</label>
-                <select id="buildingType" class="w-full border-slate-300 rounded-sm text-sm p-3 bg-white border font-semibold">
-                    <option value="domestic">Domestic / Residential</option>
-                    <option value="nondomestic">Non-Domestic / Commercial</option>
+                <label class="block text-xs font-bold uppercase mb-1">Sector</label>
+                <select id="buildingType" class="w-full border border-black p-2 text-sm bg-gray-50">
+                    <option value="domestic">Domestic</option>
+                    <option value="nondomestic">Non-Domestic</option>
                 </select>
             </div>
             <div>
-                <label class="block text-xs font-black mb-2 uppercase tracking-widest text-slate-600">Regulation Year</label>
-                <select id="yearSet" class="w-full border-slate-300 rounded-sm text-sm p-3 bg-white border font-semibold">
-                    </select>
+                <label class="block text-xs font-bold uppercase mb-1">Regulation Year</label>
+                <select id="yearSet" class="w-full border border-black p-2 text-sm bg-gray-50"></select>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2">
-                <h2 class="text-sm font-black mb-4 uppercase flex items-center gap-2">
-                    <span class="w-4 h-4 bg-blue-900"></span> Element Transmittance Targets
-                </h2>
-                <div class="overflow-hidden border border-slate-200">
-                    <table id="uValueTable" class="min-w-full text-sm">
-                        <thead class="bg-slate-100 text-slate-700">
-                            <tr class="border-b border-slate-200">
-                                <th class="py-4 px-4 text-left font-bold uppercase tracking-tighter">Component</th>
-                                <th class="py-4 px-4 text-center font-bold bg-red-50 text-red-900 border-x">Limiting ($U_{max}$)</th>
-                                <th class="py-4 px-4 text-center font-bold bg-green-50 text-green-900">Notional ($U_{target}$)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="u-table-body" class="divide-y divide-slate-100"></tbody>
-                    </table>
-                </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+                <h2 class="font-bold border-b border-black mb-4 uppercase text-sm">U-Values (W/m²K)</h2>
+                <table id="uValueTable" class="w-full text-left text-sm border-collapse">
+                    <thead>
+                        <tr class="border-b border-black">
+                            <th class="py-2">Element</th>
+                            <th class="py-2 text-center">Limiting</th>
+                            <th class="py-2 text-center font-bold text-blue-800">Notional</th>
+                        </tr>
+                    </thead>
+                    <tbody id="u-table-body"></tbody>
+                </table>
             </div>
 
             <div>
-                <h2 class="text-sm font-black mb-4 uppercase flex items-center gap-2">
-                    <span class="w-4 h-4 bg-orange-600"></span> Thermal Bridging ($\Psi$)
-                </h2>
-                <div class="overflow-hidden border border-slate-200">
-                    <table id="psiTable" class="min-w-full text-xs">
-                        <thead class="bg-slate-100">
-                            <tr class="border-b border-slate-200">
-                                <th class="py-4 px-4 text-left font-bold uppercase">Junction</th>
-                                <th class="py-4 px-4 text-center font-bold uppercase">$\Psi$ ($W/mK$)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="psi-table-body" class="divide-y divide-slate-100 italic"></tbody>
-                    </table>
-                </div>
+                <h2 class="font-bold border-b border-black mb-4 uppercase text-sm">Thermal Bridging (W/mK)</h2>
+                <table id="psiTable" class="w-full text-left text-sm border-collapse">
+                    <thead>
+                        <tr class="border-b border-black">
+                            <th class="py-2">Junction</th>
+                            <th class="py-2 text-center">Psi (Ψ)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="psi-table-body"></tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <script>
-        const regArchive = {
+        const db = {
             scotland: {
                 domestic: {
                     "2023": [{e:"Wall", l:0.22, n:0.15},{e:"Roof", l:0.15, n:0.12},{e:"Floor", l:0.18, n:0.12},{e:"Glazing", l:1.40, n:1.20}],
                     "2015": [{e:"Wall", l:0.25, n:0.17},{e:"Roof", l:0.20, n:0.11},{e:"Floor", l:0.22, n:0.15},{e:"Glazing", l:1.60, n:1.40}],
                     "2010": [{e:"Wall", l:0.30, n:0.19},{e:"Roof", l:0.25, n:0.13},{e:"Floor", l:0.25, n:0.15},{e:"Glazing", l:1.80, n:1.60}],
-                    "2006": [{e:"Wall", l:0.30, n:0.27},{e:"Roof", l:0.25, n:0.16},{e:"Floor", l:0.25, n:0.22},{e:"Glazing", l:2.00, n:1.80}],
-                    "2002": [{e:"Wall", l:0.35, n:0.30},{e:"Roof", l:0.25, n:0.20},{e:"Floor", l:0.25, n:0.25},{e:"Glazing", l:2.20, n:2.00}]
+                    "2007": [{e:"Wall", l:0.30, n:0.27},{e:"Roof", l:0.25, n:0.16},{e:"Floor", l:0.25, n:0.22},{e:"Glazing", l:2.00, n:1.80}],
+                    "1997": [{e:"Wall", l:0.45, n:0.45},{e:"Roof", l:0.25, n:0.25},{e:"Floor", l:0.45, n:0.45},{e:"Glazing", l:3.00, n:2.80}],
+                    "1991": [{e:"Wall", l:0.60, n:0.60},{e:"Roof", l:0.35, n:0.35},{e:"Floor", l:0.60, n:0.60},{e:"Glazing", l:5.70, n:3.30}],
+                    "1982": [{e:"Wall", l:1.00, n:1.00},{e:"Roof", l:0.60, n:0.60},{e:"Floor", l:1.00, n:1.00},{e:"Glazing", l:5.70, n:5.70}]
                 },
                 nondomestic: {
-                    "2023": [{e:"Wall", l:0.25, n:0.21},{e:"Roof", l:0.15, n:0.15},{e:"Floor", l:0.18, n:0.15},{e:"Glazing", l:1.40, n:1.40}]
+                    "2023": [{e:"Wall", l:0.25, n:0.21},{e:"Roof", l:0.15, n:0.15},{e:"Floor", l:0.18, n:0.15},{e:"Glazing", l:1.40, n:1.40}],
+                    "2015": [{e:"Wall", l:0.27, n:0.25},{e:"Roof", l:0.20, n:0.18},{e:"Floor", l:0.22, n:0.20},{e:"Glazing", l:1.60, n:1.60}]
                 }
             },
             england: {
@@ -109,88 +90,103 @@
                     "2022": [{e:"Wall", l:0.26, n:0.18},{e:"Roof", l:0.16, n:0.11},{e:"Floor", l:0.18, n:0.13},{e:"Glazing", l:1.60, n:1.20}],
                     "2013": [{e:"Wall", l:0.30, n:0.18},{e:"Roof", l:0.20, n:0.13},{e:"Floor", l:0.25, n:0.13},{e:"Glazing", l:2.00, n:1.40}],
                     "2010": [{e:"Wall", l:0.30, n:0.28},{e:"Roof", l:0.20, n:0.18},{e:"Floor", l:0.25, n:0.22},{e:"Glazing", l:2.00, n:1.80}],
-                    "2006": [{e:"Wall", l:0.35, n:0.30},{e:"Roof", l:0.25, n:0.20},{e:"Floor", l:0.25, n:0.22},{e:"Glazing", l:2.20, n:2.00}]
+                    "2006": [{e:"Wall", l:0.35, n:0.30},{e:"Roof", l:0.25, n:0.20},{e:"Floor", l:0.25, n:0.22},{e:"Glazing", l:2.20, n:2.00}],
+                    "2002": [{e:"Wall", l:0.35, n:0.35},{e:"Roof", l:0.25, n:0.16},{e:"Floor", l:0.25, n:0.22},{e:"Glazing", l:2.20, n:2.00}],
+                    "1995": [{e:"Wall", l:0.45, n:0.45},{e:"Roof", l:0.25, n:0.25},{e:"Floor", l:0.45, n:0.45},{e:"Glazing", l:3.30, n:3.30}],
+                    "1990": [{e:"Wall", l:0.60, n:0.60},{e:"Roof", l:0.35, n:0.35},{e:"Floor", l:0.60, n:0.60},{e:"Glazing", l:5.70, n:5.70}]
                 },
                 nondomestic: {
                     "2022": [{e:"Wall", l:0.26, n:0.26},{e:"Roof", l:0.18, n:0.18},{e:"Floor", l:0.18, n:0.18},{e:"Glazing", l:1.60, n:1.60}]
                 }
             },
             passivhaus: {
-                standard: [{e:"Opaque Shell", l:0.15, n:0.10},{e:"Glazing (Installed)", l:0.85, n:0.80},{e:"Airtightness (n50)", l:"0.6h-1", n:"0.6h-1"}]
+                domestic: {
+                    "2024": [{e:"Opaque Shell", l:0.15, n:0.10},{e:"Glazing", l:0.85, n:0.80},{e:"Airtightness", l:"0.6 ach", n:"0.6 ach"}],
+                    "2015": [{e:"Opaque Shell", l:0.15, n:0.15},{e:"Glazing", l:0.85, n:0.85},{e:"Airtightness", l:"0.6 ach", n:"0.6 ach"}]
+                }
             },
-            psiValues: [
-                { j: "E1: Lintel", v: 0.05 }, { j: "E3: Sill", v: 0.04 }, { j: "E5: Ground Floor", v: 0.16 }, { j: "Passivhaus Target", v: "<0.01" }
+            psi: [
+                { j: "E1: Lintel", v: 0.05 }, { j: "E3: Sill", v: 0.04 }, { j: "E5: Ground Floor", v: 0.16 }, { j: "E16: Corner", v: 0.09 }, { j: "PH Junction", v: 0.01 }
             ]
         };
 
-        const countryEl = document.getElementById('country');
-        const typeEl = document.getElementById('buildingType');
-        const yearEl = document.getElementById('yearSet');
+        const countrySel = document.getElementById('country');
+        const typeSel = document.getElementById('buildingType');
+        const yearSel = document.getElementById('yearSet');
 
-        function updateYearDropdown() {
-            const country = countryEl.value;
-            const type = typeEl.value;
-            yearEl.innerHTML = '';
+        function updateYears() {
+            const country = countrySel.value;
+            const type = typeSel.value;
+            yearSel.innerHTML = '';
             
-            if (country === 'passivhaus') {
-                yearEl.innerHTML = '<option value="standard">Classic/Plus/Premium</option>';
-            } else {
-                const years = Object.keys(regArchive[country][type]);
-                years.forEach(yr => {
-                    yearEl.innerHTML += `<option value="${yr}">${yr} Standard</option>`;
-                });
-            }
-            updateTables();
+            // Handle cases where sector might not exist for older years
+            const years = db[country] && db[country][type] ? Object.keys(db[country][type]) : [];
+            
+            years.sort((a, b) => b - a).forEach(y => {
+                const opt = document.createElement('option');
+                opt.value = y; opt.textContent = y;
+                yearSel.appendChild(opt);
+            });
+            render();
         }
 
-        function updateTables() {
-            const country = countryEl.value;
-            const type = typeEl.value;
-            const year = yearEl.value;
+        function render() {
+            const country = countrySel.value;
+            const type = typeSel.value;
+            const year = yearSel.value;
+            const uTable = document.getElementById('u-table-body');
+            const pTable = document.getElementById('psi-table-body');
             
-            let uRows = "";
-            let dataSet = (country === 'passivhaus') ? regArchive.passivhaus.standard : regArchive[country][type][year];
-
-            dataSet.forEach(row => {
-                uRows += `<tr class="border-b hover:bg-slate-50 transition-all">
-                    <td class="py-4 px-4 font-bold text-slate-700">${row.e}</td>
-                    <td class="py-4 px-4 text-center mono text-red-700 font-bold">${row.l}</td>
-                    <td class="py-4 px-4 text-center mono text-blue-900 font-black underline">${row.n}</td>
+            uTable.innerHTML = '';
+            const data = db[country]?.[type]?.[year] || [];
+            data.forEach(r => {
+                uTable.innerHTML += `<tr class="border-b border-gray-100">
+                    <td class="py-3">${r.e}</td>
+                    <td class="py-3 text-center text-gray-600">${r.l}</td>
+                    <td class="py-3 text-center font-bold text-blue-900">${r.n}</td>
                 </tr>`;
             });
-            document.getElementById('u-table-body').innerHTML = uRows;
 
-            let psiRows = "";
-            regArchive.psiValues.forEach(row => {
-                psiRows += `<tr class="border-b">
-                    <td class="py-3 px-4">${row.j}</td>
-                    <td class="py-3 px-4 text-center mono font-bold text-orange-700">${row.v}</td>
-                </tr>`;
+            pTable.innerHTML = '';
+            db.psi.forEach(r => {
+                pTable.innerHTML += `<tr class="border-b border-gray-100"><td class="py-3">${r.j}</td><td class="py-3 text-center font-mono">${r.v}</td></tr>`;
             });
-            document.getElementById('psi-table-body').innerHTML = psiRows;
         }
 
-        async function createPDF() {
+        async function exportPdf() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            const proj = document.getElementById('projectName').value || "Unspecified Project";
+            const header = `REGULATORY TARGETS: ${countrySel.options[countrySel.selectedIndex].text} (${yearSel.value})`;
             
-            doc.setFontSize(22);
-            doc.text("TECHNICAL COMPLIANCE SUMMARY", 14, 20);
-            doc.setFontSize(10);
-            doc.text(`PROJECT: ${proj}`, 14, 30);
-            doc.text(`REGULATION: ${countryEl.selectedOptions[0].text} (${yearEl.value})`, 14, 35);
-            doc.text(`DATE: ${new Date().toLocaleDateString('en-GB')}`, 14, 40);
+            doc.setFontSize(12);
+            doc.text(header, 14, 15);
+            doc.setFontSize(8);
+            doc.text(`Generated: ${new Date().toISOString().split('T')[0]} | CIBSE Compliance Tool`, 14, 20);
 
-            doc.autoTable({ html: '#uValueTable', startY: 50, headStyles: {fillColor: [15, 23, 42]} });
-            doc.autoTable({ html: '#psiTable', startY: doc.lastAutoTable.finalY + 10, headStyles: {fillColor: [194, 65, 12]} });
+            doc.autoTable({ 
+                html: '#uValueTable', 
+                startY: 25, 
+                theme: 'grid', 
+                headStyles: { fillColor: 0, textColor: 255 },
+                styles: { fontSize: 9 }
+            });
+            
+            doc.autoTable({ 
+                html: '#psiTable', 
+                startY: doc.lastAutoTable.finalY + 10, 
+                theme: 'grid', 
+                headStyles: { fillColor: 50, textColor: 255 },
+                styles: { fontSize: 9 }
+            });
 
-            doc.save(`${proj.replace(/\s+/g, '_')}_UValue_Report.pdf`);
+            doc.save(`U-Value_Report_${yearSel.value}.pdf`);
         }
 
-        [countryEl, typeEl, yearEl].forEach(s => s.addEventListener('change', updateYearDropdown));
-        document.getElementById('exportPdf').addEventListener('click', createPDF);
-        window.onload = updateYearDropdown;
+        countrySel.addEventListener('change', updateYears);
+        typeSel.addEventListener('change', updateYears);
+        yearSel.addEventListener('change', render);
+        document.getElementById('exportPdf').addEventListener('click', exportPdf);
+        window.onload = updateYears;
     </script>
 </body>
 </html>
